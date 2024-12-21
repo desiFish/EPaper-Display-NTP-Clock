@@ -27,7 +27,13 @@ int nightFlag = 0;        //remembers last state of clocl i.e. sleeping or not
 int TIME_TO_SLEEP = 60;        //in seconds
 
 #define BATPIN A0                  //battery voltage divider connection pin (1M Ohm with 104 Capacitor)
-#define BATTERY_LEVEL_SAMPLING 32  //number of times to average the reading
+#define BATTERY_LEVEL_SAMPLING 4  //number of times to average the reading
+
+//battery related settings
+#define battChangeThreshold 0.15
+#define battUpperLim 3.3
+#define battHigh 3.4
+#define battLow 2.9
 
 const char *ssid = "SonyBraviaX400";
 const char *password = "79756622761";
@@ -48,11 +54,13 @@ float batteryLevel() {
   uint32_t Vbatt = 0;
   for (int i = 0; i < BATTERY_LEVEL_SAMPLING; i++) {
     Vbatt = Vbatt + analogReadMilliVolts(BATPIN);  // ADC with correction
+    delay(10);
   }
   float Vbattf = 2 * Vbatt / BATTERY_LEVEL_SAMPLING / 1000.0;  // attenuation ratio 1/2, mV --> V
   //Serial.println(Vbattf);
-  return Vbattf;
+  return (Vbattf);
 }
+
 
 void enableWiFi() {
   //adc_power_on();
@@ -187,10 +195,10 @@ void setup() {
     if (newBattLevel < battLevel)  //to maintain steady decrease in battery level
       battLevel = newBattLevel;
 
-    if (((newBattLevel - battLevel) >= 0.2) || newBattLevel > 3.5)  //to update the battery level in case of charging
-      battLevel = newBattLevel;
+  if (((newBattLevel - battLevel) >= battChangeThreshold) || newBattLevel > battUpperLim)  //to update the battery level in case of charging
+    battLevel = newBattLevel;
 
-    byte percent = ((battLevel - 2.7) / 0.7) * 100;  //range is 3.4v-100% and 2.7v-0%
+    byte percent = ((battLevel - battLow) / (battHigh - battLow)) * 100;  //range is 3.4v-100% and 2.7v-0%
     if (percent < 1)
       percent = 1;
     else if (percent > 100)
@@ -200,7 +208,7 @@ void setup() {
       pref.putFloat("battLevel", battLevel);
 
     String percentStr;
-    if (battLevel > 4.11)
+    if (battLevel >= 4.0)
       percentStr = "USB";
     else
       percentStr = String(percent) + "%";
