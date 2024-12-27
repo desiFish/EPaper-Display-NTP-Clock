@@ -1,57 +1,79 @@
-
 # Minimalistic E-Paper 3.52inch Display NTP-RTC Clock
 
 ## Hardware
-1. Xiao ESP32 C3
-2. Waveshare 3.52inch BiColor 360x240 E-paper display refresh time 1.5 secs.
-3. BH1750 (For light sensing)
-4. DS3231 (For time keeping)
-5. LiFePO4 6000mAh 3.2V Battery (Cheaper compared to ICR Cells)
-6. TP5000 2 in 1 charging module
-7. 1 BMS (2.5V Low Cutoff)
-8. USB C breakout or any receiving board
-9. Other stuffs like wire, capacitor (104), resistor (1M Ohm), connectors, switch, LED (1) etc.
+| Component                        | Description                                      |
+|----------------------------------|--------------------------------------------------|
+| Xiao ESP32 C3                    | Microcontroller                                  |
+| Waveshare 3.52inch BiColor E-paper | 360x240 display (refresh time: 1.5 secs)         |
+| BH1750                           | Light sensor                                     |
+| DS3231                           | RTC for timekeeping                              |
+| LiFePO4 6000mAh 3.2V Battery     | Cheaper compared to ICR Cells                    |
+| TP5000                           | 2-in-1 charging module                           |
+| BMS                              | 2.5V Low Cutoff                                  |
+| USB-C breakout                   | Any receiving board                              |
+| Other components                 | Wire, capacitor (104), resistor (1M Ohm), connectors, switch, LED (1), etc. |
 
 ## Notes
-1. Don't forget to update the GPIO pin config in header file ```src/epdif.h```
+1. Update the GPIO pin config in the header file `src/epdif.h`.
 
-## UPCOMING FEATURES
-Check [issues](https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/issues)
-   
+## Getting Started
+### Prerequisites
+- Arduino IDE installed
+- ESP32 board support added to Arduino IDE
+- Required libraries: `SPI`, `Wire`, `WiFi`, `NTPClient`, `Preferences`, `BH1750`, `RTClib`
+
+### Installation
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock.git
+   ```
+2. Open the project in Arduino IDE.
+3. Update the WiFi credentials in the `epdNtpClockV1.ino` file:
+   ```cpp
+   const char *ssid = "Your_SSID";
+   const char *password = "Your_PASSWORD";
+   ```
+4. Upload the code to your ESP32 board.
+
+## Upcoming Features
+Check [issues](https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/issues).
+
 Clock based on Waveshare 3.52inch e-Paper HAT, 360 × 240. :leaves: Eco-Friendly!
 
-The clock runs on a 6000mAh LiFePO4 cell ( :leaves: :leaves: Eco-Friendly af!). There is an RTC for super power saving operation, and everyday at a particular time it connects to NTP and updates itself. 
+The clock runs on a 6000mAh LiFePO4 cell (:leaves: :leaves: Eco-Friendly!). It uses an RTC for power-saving operation and connects to NTP daily to update itself.
 
-Also, it houses a LUX sensor (BH1750) for sleeping while it is dark (E-paper doesn't have a backlight, remember?) ( :leaves: :leaves: :leaves: Eco-Friendly af faka fak!)
+It also includes a LUX sensor (BH1750) for sleeping while it is dark (E-paper doesn't have a backlight). (:leaves: :leaves: :leaves: Eco-Friendly!)
 
-Made of old delivery card boards. :exploding_head: One-Punch Eco-Friendly Boost Ultra Pro Max :leaves: to :infinity:
+Made of old delivery cardboards. :exploding_head: One-Punch Eco-Friendly Boost Ultra Pro Max :leaves: to :infinity:
 
-Supports 5V 1A charging with options upto 2A.
+Supports 5V 1A charging with options up to 2A.
 
 All USB-C operation (charging and debugging).
 
-This clock does not runs on GxEPD2 Library (while making this clock, this display was not supported). This runs on OEM provided basic library.
+This clock does not run on the GxEPD2 Library (the display was not supported at the time of making). It uses the OEM-provided basic library.
 
-Battery life: <br>
-a. Full: 06/06/2024, Dead: 01/11/2024 Around 4 months and 27 days!
+Battery life:
+- Full: 06/06/2024
+- Dead: 01/11/2024 (Around 4 months and 27 days)
 
-## Picture(s)
+## Pictures
 
 ![Clock](https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/epdClock.jpg)
 
-## FEATURES V1.0.1 
+## Features V1.0.1
 1. Battery Icon
 
-## FEATURES V1.0.0 (New Features Coming Soon (Might take a year or so))
-1. Minimalistic design
-2. Auto-updates internal clock everyday (wifi connectivity needed)
-3. Big Icons
-4. Shows battery percentage and voltage
-5. Updates after every 60 secs and sleeps for the rest.
-6. Read below
-7. Mammoth 6000mAh battery! (Your personal choice though)
+## Features V1.0.0
+| Feature                          | Description                                      |
+|----------------------------------|--------------------------------------------------|
+| Minimalistic design              | Simple and clean design                          |
+| Auto-updates internal clock      | Daily updates (requires Wi-Fi connectivity)      |
+| Big Icons                        | Easy to read                                     |
+| Battery percentage and voltage   | Displays battery status                          |
+| Updates every 60 seconds         | Sleeps for the rest of the time                  |
+| Mammoth 6000mAh battery          | Long-lasting power (your personal choice though) |
 
 ## License
 
-Distribute it freely but link back to this project or put some good words or attributes or donate haha. You are own your own, I take no resposibility, if this thing explodes or does any damage on anything.
+Distribute it freely but link back to this project or provide some good words or attributes or donate. You are on your own; I take no responsibility if this device causes any damage.
 
