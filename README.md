@@ -5,17 +5,14 @@
     <img src="https://img.shields.io/badge/Battery-6000mAh-green?style=flat-square"/>
     <img src="https://img.shields.io/badge/Display-3.52%22-orange?style=flat-square"/>
     <img src="https://img.shields.io/badge/Eco-Friendly-brightgreen?style=flat-square"/>
-    <img src="https://img.shields.io/badge/ESP32-C3-blue?style=flat-square&logo=espressif"/>
-    <img src="https://img.shields.io/badge/Battery-6000mAh-green?style=flat-square"/>
-    <img src="https://img.shields.io/badge/Display-3.52%22-orange?style=flat-square"/>
-    <img src="https://img.shields.io/badge/Eco-Friendly-brightgreen?style=flat-square"/>
+  </p>
+  <p>
+    <img src="https://img.shields.io/badge/status-active-success.svg" alt="Status">
+    <a href="/LICENSE"><img src="https://img.shields.io/github/license/desiFish/ESP32-ePaper-Display-NTP-Clock" alt="License"></a>
+    <a href="https://github.com/desiFish/ESP32-ePaper-Display-NTP-Clock/issues"><img src="https://img.shields.io/github/issues/desiFish/ESP32-ePaper-Display-NTP-Clock.svg" alt="GitHub Issues"></a>
+    <a href="https://github.com/desiFish/ESP32-ePaper-Display-NTP-Clock/releases"><img src="https://img.shields.io/github/v/release/desiFish/ESP32-ePaper-Display-NTP-Clock" alt="Release"></a>
   </p>
 </div>
-
-  [![Status](https://img.shields.io/badge/status-active-success.svg)]()
-[![License](https://img.shields.io/github/license/desiFish/ESP32-ePaper-Display-NTP-Clock)](/LICENSE)
-[![GitHub Issues](https://img.shields.io/github/issues/desiFish/ESP32-ePaper-Display-NTP-Clock.svg)](https://github.com/desiFish/ESP32-ePaper-Display-NTP-Clock/issues)
-[![Release](https://img.shields.io/github/v/release/desiFish/ESP32-ePaper-Display-NTP-Clock)](https://github.com/desiFish/ESP32-ePaper-Display-NTP-Clock/releases)
 
 <details>
 <summary>📊 System Specifications</summary>
