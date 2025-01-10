@@ -309,8 +309,8 @@ const char *password = "Your_PASSWORD";
       <sub>Inside 3</sub>
     </td>
     <td align="center">
-      <img src="" width="200"><br>
-      <sub>Coming Soon</sub>
+      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x7.jpg" width="200"><br>
+      <sub>ESP32 C3 & C6</sub>
     </td>
   </tr>
 </table>
