@@ -19,19 +19,65 @@
 <details>
 <summary>📊 System Specifications</summary>
 
-```ini
-Microcontroller: Xiao ESP32 C3
-Display: 3.52 inches BiColor E-paper (360x240)
-Battery: LiFePO4 6000mAh 3.2V
-Operating Voltage: 3.2V
-Sleep Duration: 60 seconds
-I2C Speed: 400kHz
-Battery Thresholds:
-  - High: 3.4V
-  - Low: 2.9V
-NTP Server: asia.pool.ntp.org
-Time Offset: 19800 (India)
-```
+<div align="center">
+<table>
+  <tr>
+    <th colspan="2">🖥️ Core Components</th>
+  </tr>
+  <tr>
+    <td>🧠 Microcontroller</td>
+    <td>Xiao ESP32 C3 (Compatible with most ESP32 boards)</td>
+  </tr>
+  <tr>
+    <td>📺 Display</td>
+    <td>3.52" BiColor E-paper (360x240)</td>
+  </tr>
+  <tr>
+    <td>🔋 Power Source</td>
+    <td>LiFePO4 6000mAh 3.2V</td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th colspan="2">⚡ Power Specifications</th>
+  </tr>
+  <tr>
+    <td>Operating Voltage</td>
+    <td>3.2V</td>
+  </tr>
+  <tr>
+    <td>Sleep Duration</td>
+    <td>60 seconds</td>
+  </tr>
+  <tr>
+    <td>Battery Thresholds</td>
+    <td>
+      📈 High: 3.4V<br>
+      📉 Low: 2.9V
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th colspan="2">🔌 Communication</th>
+  </tr>
+  <tr>
+    <td>I2C Speed</td>
+    <td>400kHz (Fast Mode)</td>
+  </tr>
+  <tr>
+    <td>NTP Server</td>
+    <td>asia.pool.ntp.org</td>
+  </tr>
+  <tr>
+    <td>Time Offset</td>
+    <td>19800 (India, UTC+5:30)</td>
+  </tr>
+</table>
+</div>
+
 </details>
 
 ## 🛠️ Hardware Components
