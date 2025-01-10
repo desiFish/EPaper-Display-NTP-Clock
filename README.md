@@ -236,7 +236,6 @@ const char *password = "Your_PASSWORD";
   <tr>
     <td colspan="4">
       <strong>Performance Metrics</strong><br>
-      ⚡ Average Current Draw: ~60µA<br>
       🔋 Initial Voltage: 3.6V<br>
       📉 Final Voltage: ~2.84V<br>
       🌡️ Temperature Range: 17-38°C
@@ -265,10 +264,36 @@ const char *password = "Your_PASSWORD";
   <tr>
     <td colspan="4">
       <strong>Performance Metrics</strong><br>
-      ⚡ Average Current Draw: Measuring...<br>
       🔋 Initial Voltage: 3.6V<br>
       📉 Final Voltage: TBD<br>
       🌡️ Temperature Range: Monitoring...
+    </td>
+  </tr>
+</table>
+<br>
+
+<table>
+  <tr>
+    <th colspan="4">📊 Battery Life Analysis - Test #1 (With ESP32 C6)</th>
+  </tr>
+  <tr>
+    <td><strong>Start Date</strong></td>
+    <td><strong>End Date</strong></td>
+    <td><strong>Runtime</strong></td>
+    <td><strong>Status</strong></td>
+  </tr>
+  <tr>
+    <td>Coming Soon</td>
+    <td>Coming Soon</td>
+    <td>Coming Soon</td>
+    <td>Coming Soon</td>
+  </tr>
+  <tr>
+    <td colspan="4">
+      <strong>Performance Metrics</strong><br>
+      🔋 Initial Voltage: 3.6V<br>
+      📉 Final Voltage: TBD<br>
+      🌡️ Temperature Range: Coming Soon
     </td>
   </tr>
 </table>
