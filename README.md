@@ -191,7 +191,7 @@ const char *password = "Your_PASSWORD";
 <div align="center">
 <table>
   <tr>
-    <th colspan="4">📊 Battery Life Analysis</th>
+    <th colspan="4">📊 Battery Life Analysis - Test #1</th>
   </tr>
   <tr>
     <td><strong>Start Date</strong></td>
@@ -215,11 +215,77 @@ const char *password = "Your_PASSWORD";
     </td>
   </tr>
 </table>
+
+<br>
+
+<table>
+  <tr>
+    <th colspan="4">📊 Battery Life Analysis - Test #2</th>
+  </tr>
+  <tr>
+    <td><strong>Start Date</strong></td>
+    <td><strong>End Date</strong></td>
+    <td><strong>Runtime</strong></td>
+    <td><strong>Status</strong></td>
+  </tr>
+  <tr>
+    <td>November 1, 2024</td>
+    <td>Coming Soon</td>
+    <td>In Progress</td>
+    <td>⏳ Running</td>
+  </tr>
+  <tr>
+    <td colspan="4">
+      <strong>Performance Metrics</strong><br>
+      ⚡ Average Current Draw: Measuring...<br>
+      🔋 Initial Voltage: 3.6V<br>
+      📉 Final Voltage: TBD<br>
+      🌡️ Temperature Range: Monitoring...
+    </td>
+  </tr>
+</table>
 </div>
 
 ## 📷 Gallery
 <div align="center">
-<img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/epdClock.jpg" width="500">
+<table border="0" cellspacing="0" cellpadding="10">
+  <tr>
+    <td align="center">
+      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/epdClock.jpg" width="200"><br>
+      <sub>Main Display</sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x1.jpg" width="200"><br>
+      <sub>Add Image 2</sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x2.jpg" width="200"><br>
+      <sub>Add Image 3</sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x3.jpg" width="200"><br>
+      <sub>Add Image 4</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x4.jpg" width="200"><br>
+      <sub>Add Image 5</sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x5.jpg" width="200"><br>
+      <sub>Add Image 6</sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x6.jpg" width="200"><br>
+      <sub>Add Image 7</sub>
+    </td>
+    <td align="center">
+      <img src="" width="200"><br>
+      <sub>Coming Soon</sub>
+    </td>
+  </tr>
+</table>
 </div>
 
 ## 🛠️ Development
@@ -257,7 +323,7 @@ const char *password = "Your_PASSWORD";
 ### Battery Configuration Safety
 
 ### Power Management Considerations
-- ⚡ **Current Draw**: This project's extremely low current consumption (well below rated cell capacity) makes the parallel configuration safer
+- ⚡ **Current Draw**: This project's extremely low current consumption (well below rated cell capacity) makes the cell configuration safer
 - 🛡️ **Protection**: Always use proper BMS protection for your cells
 - 📝 **BMS Setup**: Due to limited 1S LiFePO4 BMS availability:
   - Using 4.2V BMS for 2.5V cutoff protection
