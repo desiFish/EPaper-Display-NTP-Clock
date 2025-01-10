@@ -14,6 +14,8 @@
   </p>
 </div>
 
+> ⚠️ **IMPORTANT**: Please read the [Notes & Warnings] section carefully before proceeding with this project. It contains crucial safety information about battery configuration, charging, and sensor placement.
+
 <details>
 <summary>📊 System Specifications</summary>
 
@@ -210,6 +212,45 @@ Runtime: ~4 months 27 days
 - WiFi Mode: STA
 - Display Library: OEM Basic (No GxEPD2)
 </details>
+
+## ⚠️ Important Notes & Warnings
+
+### Battery Configuration Safety
+
+### Power Management Considerations
+- ⚡ **Current Draw**: This project's extremely low current consumption (well below rated cell capacity) makes the parallel configuration safer
+- 🛡️ **Protection**: Always use proper BMS protection for your cells
+- 📝 **BMS Setup**: Due to limited 1S LiFePO4 BMS availability:
+  - Using 4.2V BMS for 2.5V cutoff protection
+  - TP5000 connected directly to the cell for proper 3.6V charging
+  - This is a temporary solution until better 1S LFP BMS options become available
+
+### USB Charging Safety
+- ⚡ **USB Connection Warning**: Disconnect battery when connecting USB to ESP32C3
+  - XIAO modules are designed for LiPo/Li-ion batteries (4.2V charging)
+  - Not compatible with LFP battery charging (3.6V required)
+  - Dedicated USB-C module recommended
+  - Connect USB-C module output to TP5000 input
+  - Detailed schematics will be provided later
+  - Simple setup despite complex explanation
+
+### Voltage Compatibility
+- ✅ **Operating Range**: 
+  - All components work perfectly with LFP's lower voltage
+  - Tested operational down to 2.8V
+  - No impact on battery life or performance
+  - LFP cells maintain stable 3.2V for extended periods
+  - 6+ months of testing
+  - Components designed for wide voltage range operation
+
+### Enclosure Design
+- 💨 **Ventilation Requirements**: 
+  - Proper air vents are crucial
+  - Ensures accurate sensor readings
+  - Prevents heat buildup
+
+> ⚠️ **Please consider these points carefully before replicating this setup. Battery safety is crucial!**
+
 
 ---
 <div align="center">
