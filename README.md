@@ -43,7 +43,7 @@ Time Offset: 19800 (India)
   <th>Details</th>
 </tr>
 <tr>
-  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/esp32c3.jpg" width="100"><br>Xiao ESP32 C3</td>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/esp32c3.jpg" width="100"><br>Xiao ESP32 C3</td>
   <td>
     • MCU: ESP32-C3 RISC-V<br>
     • Clock: 160MHz<br>
@@ -58,7 +58,7 @@ Time Offset: 19800 (India)
   <td>Ultra-compact IoT controller with low power consumption and built-in wireless capabilities</td>
 </tr>
 <tr>
-  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/epd.jpg" width="100"><br>Waveshare 3.52" E-Paper</td>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/epd.jpg" width="100"><br>Waveshare 3.52" E-Paper</td>
   <td>
     • Resolution: 360x240<br>
     • Colors: BiColor<br>
@@ -67,7 +67,7 @@ Time Offset: 19800 (India)
   <td>Display unit with low power consumption</td>
 </tr>
 <tr>
-  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/bh1750.jpg" width="100"><br>BH1750</td>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/bh1750.jpg" width="100"><br>BH1750</td>
   <td>
     • I2C Address: 0x23<br>
     • Mode: ONE_TIME_HIGH_RES<br>
@@ -76,7 +76,7 @@ Time Offset: 19800 (India)
   <td>Ambient light sensor for night mode</td>
 </tr>
 <tr>
-  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/ds3231.jpg" width="100"><br>DS3231</td>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/ds3231.jpg" width="100"><br>DS3231</td>
   <td>
     • Accuracy: ±2ppm<br>
     • Temperature comp.<br>
@@ -85,7 +85,7 @@ Time Offset: 19800 (India)
   <td>Real-time clock for timekeeping</td>
 </tr>
 <tr>
-  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/battery.jpg" width="100"><br>IFR32650 LiFePO4</td>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/battery.jpg" width="100"><br>IFR32650 LiFePO4</td>
   <td>
     • Model: IFR32650<br>
     • Capacity: 6000mAh<br>
@@ -100,7 +100,7 @@ Time Offset: 19800 (India)
   <td>High-capacity, safe chemistry battery with long cycle life and stable voltage output</td>
 </tr>
 <tr>
-  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/tp5000.jpg" width="100"><br>TP5000</td>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/tp5000.jpg" width="100"><br>TP5000</td>
   <td>
     • Input: 5V USB<br>
     • Output: 3.2V<br>
@@ -109,7 +109,7 @@ Time Offset: 19800 (India)
   <td>Battery charging module</td>
 </tr>
 <tr>
-  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/usbc.jpg" width="100"><br>USB-C Breakout</td>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/usbc.jpg" width="100"><br>USB-C Breakout</td>
   <td>
     • USB 2.0 Compatible<br>
     • 5V Input<br>
@@ -144,8 +144,9 @@ graph TD
     B -->|Dark| C[Sleep Mode]
     B -->|Light| D[Update Display]
     D --> E{Battery OK?}
-    E -->|Yes| F[Check Time]
-    F --> G[Deep Sleep]
+    E -->|Yes| F[Update Time]
+    F --> G[Update Display]
+    G --> H[Deep Sleep]
 ```
 
 ## 🚀 Quick Start
@@ -154,13 +155,8 @@ graph TD
 
 ```yaml
 Required Libraries:
-  - SPI
-  - Wire (I2C @ 400kHz)
-  - WiFi
-  - NTPClient
-  - Preferences
-  - BH1750 (0x23)
-  - RTClib
+  - Check header section inside .ino file
+  - OEM Display Libraries (Included)
 ```
 </details>
 
@@ -192,26 +188,69 @@ const char *password = "Your_PASSWORD";
 </table>
 
 ## 🔋 Battery Performance
-```
-Initial: 06/06/2024
-Final: 01/11/2024
-Runtime: ~4 months 27 days
-```
+<div align="center">
+<table>
+  <tr>
+    <th colspan="4">📊 Battery Life Analysis</th>
+  </tr>
+  <tr>
+    <td><strong>Start Date</strong></td>
+    <td><strong>End Date</strong></td>
+    <td><strong>Runtime</strong></td>
+    <td><strong>Status</strong></td>
+  </tr>
+  <tr>
+    <td>June 6, 2024</td>
+    <td>November 1, 2024</td>
+    <td>4 months 27 days</td>
+    <td>✅ Completed</td>
+  </tr>
+  <tr>
+    <td colspan="4">
+      <strong>Performance Metrics</strong><br>
+      ⚡ Average Current Draw: ~50µA<br>
+      🔋 Initial Voltage: 3.6V<br>
+      📉 Final Voltage: ~2.84V<br>
+      🌡️ Temperature Range: 17-38°C
+    </td>
+  </tr>
+</table>
+</div>
 
 ## 📷 Gallery
 <div align="center">
-<img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/epdClock.jpg" width="500">
+<img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/epdClock.jpg" width="500">
 </div>
 
+## 🛠️ Development
 <details>
-<summary>📝 Technical Notes</summary>
+<summary>Build Requirements</summary>
 
-- ADC Pin for Battery: A0
-- Battery Sampling: 4 readings average
-- Light Sensor: BH1750 (0x23)
-- WiFi Mode: STA
-- Display Library: OEM Basic (No GxEPD2)
+- 💻 Arduino IDE 2.3.x or newer (tested)
+- 📦 ESP32 Board Support Package
+- 🔧 USB-C cable for programming
+- 📚 Required libraries (see Prerequisites)
 </details>
+
+<details>
+<summary>Debug Tips</summary>
+
+- 🔍 Serial Monitor: 115200 baud
+- 📊 Test points available for voltage monitoring (just lift the cover)
+</details>
+
+## 📱 Connectivity
+- 📡 WiFi6 2.4GHz
+- 🕒 NTP synchronization
+- 🔄 Daily updates
+- 💤 Auto sleep when inactive
+
+## 🔬 Technical Details
+- 📊 ADC Resolution: 12-bit
+- 🔌 I2C Speed: 400kHz
+- 🔋 Power Modes:
+  - Active
+  - Deep Sleep
 
 ## ⚠️ Important Notes & Warnings
 
@@ -250,11 +289,47 @@ Runtime: ~4 months 27 days
   - Prevents heat buildup
 
 > ⚠️ **Please consider these points carefully before replicating this setup. Battery safety is crucial!**
+---
 
+## 📜 License
+<details>
+<summary>GNU General Public License v3.0</summary>
 
+This project is licensed under the GNU GPL v3.0 - see below for details:
+
+- ✅ Commercial use
+- ✅ Modification
+- ✅ Distribution
+- ✅ Patent use
+- ✅ Private use
+
+#### Limitations
+- ⚠️ Liability
+- ⚠️ Warranty
+- ℹ️ License and copyright notice required
+- ℹ️ State changes
+- ℹ️ Disclose source
+- ℹ️ Same license
+
+[Read full license](/LICENSE)
+</details>
+
+## 🤝 Contributing
+We welcome contributions! Here's how you can help:
+
+1. 🔍 Fork the repository
+2. 🌿 Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. 💾 Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. 🚀 Push to the branch (`git push origin feature/AmazingFeature`)
+5. 📝 Open a Pull Request
+
+### Pull Request Guidelines
+- ✅ Clear description of changes
+- ✅ Test your changes thoroughly
+- ✅ Update documentation if needed
+- ✅ Follow existing code style
+- ✅ Add comments where necessary
 ---
 <div align="center">
 <p>Made with ❤️ and ♻️ materials</p>
-<p>📜 <i>Distribute freely with attribution</i></p>
 </div>
-
