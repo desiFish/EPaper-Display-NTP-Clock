@@ -5,8 +5,17 @@
     <img src="https://img.shields.io/badge/Battery-6000mAh-green?style=flat-square"/>
     <img src="https://img.shields.io/badge/Display-3.52%22-orange?style=flat-square"/>
     <img src="https://img.shields.io/badge/Eco-Friendly-brightgreen?style=flat-square"/>
+    <img src="https://img.shields.io/badge/ESP32-C3-blue?style=flat-square&logo=espressif"/>
+    <img src="https://img.shields.io/badge/Battery-6000mAh-green?style=flat-square"/>
+    <img src="https://img.shields.io/badge/Display-3.52%22-orange?style=flat-square"/>
+    <img src="https://img.shields.io/badge/Eco-Friendly-brightgreen?style=flat-square"/>
   </p>
 </div>
+
+  [![Status](https://img.shields.io/badge/status-active-success.svg)]()
+[![License](https://img.shields.io/github/license/desiFish/ESP32-ePaper-Display-NTP-Clock)](/LICENSE)
+[![GitHub Issues](https://img.shields.io/github/issues/desiFish/ESP32-ePaper-Display-NTP-Clock.svg)](https://github.com/desiFish/ESP32-ePaper-Display-NTP-Clock/issues)
+[![Release](https://img.shields.io/github/v/release/desiFish/ESP32-ePaper-Display-NTP-Clock)](https://github.com/desiFish/ESP32-ePaper-Display-NTP-Clock/releases)
 
 <details>
 <summary>📊 System Specifications</summary>
@@ -37,13 +46,78 @@ Time Offset: 19800 (India)
 <tr>
   <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/esp32c3.jpg" width="100"><br>Xiao ESP32 C3</td>
   <td>
-    • MCU: ESP32-C3<br>
-    • Clock: 400kHz I2C<br>
-    • Mode: Deep Sleep Enabled
+    • MCU: ESP32-C3 RISC-V<br>
+    • Clock: 160MHz<br>
+    • RAM: 400KB SRAM<br>
+    • Flash: 4MB<br>
+    • WiFi: 2.4GHz<br>
+    • Bluetooth: BLE 5.0<br>
+    • GPIO: 11 pins<br>
+    • Size: 21x17.5mm<br>
+    • Deep Sleep: ~14µA
   </td>
-  <td>Main controller with WiFi</td>
+  <td>Ultra-compact IoT controller with low power consumption and built-in wireless capabilities</td>
 </tr>
-// ... Add similar rows for other components ...
+<tr>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/epd.jpg" width="100"><br>Waveshare 3.52" E-Paper</td>
+  <td>
+    • Resolution: 360x240<br>
+    • Colors: BiColor<br>
+    • Refresh: 1.5 secs
+  </td>
+  <td>Display unit with low power consumption</td>
+</tr>
+<tr>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/bh1750.jpg" width="100"><br>BH1750</td>
+  <td>
+    • I2C Address: 0x23<br>
+    • Mode: ONE_TIME_HIGH_RES<br>
+    • Precision: 1-65535 lux
+  </td>
+  <td>Ambient light sensor for night mode</td>
+</tr>
+<tr>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/ds3231.jpg" width="100"><br>DS3231</td>
+  <td>
+    • Accuracy: ±2ppm<br>
+    • Temperature comp.<br>
+    • Battery backup
+  </td>
+  <td>Real-time clock for timekeeping</td>
+</tr>
+<tr>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/battery.jpg" width="100"><br>IFR32650 LiFePO4</td>
+  <td>
+    • Model: IFR32650<br>
+    • Capacity: 6000mAh<br>
+    • Voltage: 3.2V nominal<br>
+    • Chemistry: LiFePO4<br>
+    • Cycle Life: >2000 cycles<br>
+    • Size: 32x65mm<br>
+    • Max Discharge: 2C<br>
+    • Temperature Range: -20°C to 60°C<br>
+    • Self-discharge: 3% per month
+  </td>
+  <td>High-capacity, safe chemistry battery with long cycle life and stable voltage output</td>
+</tr>
+<tr>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/tp5000.jpg" width="100"><br>TP5000</td>
+  <td>
+    • Input: 5V USB<br>
+    • Output: 3.2V<br>
+    • Current: Up to 2A
+  </td>
+  <td>Battery charging module</td>
+</tr>
+<tr>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/usbc.jpg" width="100"><br>USB-C Breakout</td>
+  <td>
+    • USB 2.0 Compatible<br>
+    • 5V Input<br>
+    • Data lines available
+  </td>
+  <td>Power input and debugging interface</td>
+</tr>
 </table>
 
 ## 💡 Key Features
@@ -114,9 +188,8 @@ const char *password = "Your_PASSWORD";
 <tr>
   <td>Deep Sleep</td>
   <td>60 seconds</td>
-  <td>~10µA</td>
+  <td>~50µA</td>
 </tr>
-// ... Add other power states ...
 </table>
 
 ## 🔋 Battery Performance
