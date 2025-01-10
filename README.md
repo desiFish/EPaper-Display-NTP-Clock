@@ -16,7 +16,6 @@
 
 > ⚠️ **IMPORTANT**: Please read the [Notes & Warnings] section carefully before proceeding with this project. It contains crucial safety information about battery configuration, charging, and sensor placement.
 
-<details>
 <summary>📊 System Specifications</summary>
 
 <div align="center">
@@ -44,7 +43,7 @@
   </tr>
   <tr>
     <td>Operating Voltage</td>
-    <td>3.2V</td>
+    <td>~3.2V</td>
   </tr>
   <tr>
     <td>Sleep Duration</td>
@@ -77,8 +76,6 @@
   </tr>
 </table>
 </div>
-
-</details>
 
 ## 🛠️ Hardware Components
 <table>
