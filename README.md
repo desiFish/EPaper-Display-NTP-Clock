@@ -21,13 +21,12 @@
 
 ```ini
 Microcontroller: Xiao ESP32 C3
-Display: 3.52" BiColor E-paper (360x240)
+Display: 3.52 inches BiColor E-paper (360x240)
 Battery: LiFePO4 6000mAh 3.2V
 Operating Voltage: 3.2V
 Sleep Duration: 60 seconds
 I2C Speed: 400kHz
 Battery Thresholds:
-  - Upper Limit: 3.3V
   - High: 3.4V
   - Low: 2.9V
 NTP Server: asia.pool.ntp.org
@@ -53,7 +52,7 @@ Time Offset: 19800 (India)
     • Bluetooth: BLE 5.0<br>
     • GPIO: 11 pins<br>
     • Size: 21x17.5mm<br>
-    • Deep Sleep: ~14µA
+    • Deep Sleep: ~45µA
   </td>
   <td>Ultra-compact IoT controller with low power consumption and built-in wireless capabilities</td>
 </tr>
@@ -173,20 +172,6 @@ const char *password = "Your_PASSWORD";
 4. Upload code
 </details>
 
-## 📊 Power Analysis
-<table>
-<tr>
-  <th>Mode</th>
-  <th>Duration</th>
-  <th>Current Draw</th>
-</tr>
-<tr>
-  <td>Deep Sleep</td>
-  <td>60 seconds</td>
-  <td>~50µA</td>
-</tr>
-</table>
-
 ## 🔋 Battery Performance
 <div align="center">
 <table>
@@ -208,7 +193,7 @@ const char *password = "Your_PASSWORD";
   <tr>
     <td colspan="4">
       <strong>Performance Metrics</strong><br>
-      ⚡ Average Current Draw: ~50µA<br>
+      ⚡ Average Current Draw: ~60µA<br>
       🔋 Initial Voltage: 3.6V<br>
       📉 Final Voltage: ~2.84V<br>
       🌡️ Temperature Range: 17-38°C
@@ -252,33 +237,33 @@ const char *password = "Your_PASSWORD";
   <tr>
     <td align="center">
       <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/epdClock.jpg" width="200"><br>
-      <sub>Main Display</sub>
+      <sub>Front 1</sub>
     </td>
     <td align="center">
       <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x1.jpg" width="200"><br>
-      <sub>Add Image 2</sub>
+      <sub>Side 1</sub>
     </td>
     <td align="center">
       <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x2.jpg" width="200"><br>
-      <sub>Add Image 3</sub>
+      <sub>Back</sub>
     </td>
     <td align="center">
       <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x3.jpg" width="200"><br>
-      <sub>Add Image 4</sub>
+      <sub>Front 2</sub>
     </td>
   </tr>
   <tr>
     <td align="center">
       <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x4.jpg" width="200"><br>
-      <sub>Add Image 5</sub>
+      <sub>Inside 1</sub>
     </td>
     <td align="center">
       <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x5.jpg" width="200"><br>
-      <sub>Add Image 6</sub>
+      <sub>Inside 2</sub>
     </td>
     <td align="center">
       <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x6.jpg" width="200"><br>
-      <sub>Add Image 7</sub>
+      <sub>Inside 3</sub>
     </td>
     <td align="center">
       <img src="" width="200"><br>
@@ -326,7 +311,7 @@ const char *password = "Your_PASSWORD";
 - ⚡ **Current Draw**: This project's extremely low current consumption (well below rated cell capacity) makes the cell configuration safer
 - 🛡️ **Protection**: Always use proper BMS protection for your cells
 - 📝 **BMS Setup**: Due to limited 1S LiFePO4 BMS availability:
-  - Using 4.2V BMS for 2.5V cutoff protection
+  - Using 4.2V BMS for 2.5V cutoff protection (Low Discharge Cutoff)
   - TP5000 connected directly to the cell for proper 3.6V charging
   - This is a temporary solution until better 1S LFP BMS options become available
 
