@@ -219,7 +219,7 @@ const char *password = "Your_PASSWORD";
 <div align="center">
 <table>
   <tr>
-    <th colspan="4">📊 Battery Life Analysis - Test #1</th>
+    <th colspan="4">📊 Battery Life Analysis - Test #1 (With ESP32 C3)</th>
   </tr>
   <tr>
     <td><strong>Start Date</strong></td>
@@ -372,6 +372,18 @@ const char *password = "Your_PASSWORD";
   - Deep Sleep
 
 ## ⚠️ Important Notes & Warnings
+
+### DS3231 Battery Safety
+<div align="center">
+<img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x8.jpeg" width="300"><br>
+Most DS3231 modules are sold with CR2032 or similar cells which are not rechargeable. If you are using a non-rechargeable cell then remove either the resistor or the diode marked in the above image.
+</div>
+
+### TP5000 Charging Configuration
+<div align="center">
+<img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x9.png" width="300"><br>
+There are some misinformation over internet regarding the charging mode of TP5000. If you are going to use LiFePO4 cell with TP5000 then do not short the above marked area with caption F.
+</div>
 
 ### Battery Configuration Safety
 
