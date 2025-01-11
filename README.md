@@ -14,9 +14,9 @@
   </p>
 </div>
 
-> ⚠️ **IMPORTANT**: Please read the [Notes & Warnings] section carefully before proceeding with this project. It contains crucial safety information about battery configuration, charging, and sensor placement.
+> 🚨 **IMPORTANT**: Please read the [Notes & Warnings] section carefully before proceeding with this project. It contains crucial safety information about battery configuration, charging, and sensor placement.
 
-<summary>📊 System Specifications</summary>
+<summary>🎯 System Specifications</summary>
 
 <div align="center">
 <table>
@@ -77,7 +77,7 @@
 </table>
 </div>
 
-## 🛠️ Hardware Components
+## 🛠️ Hardware Components <sub><sup>🔩 Parts List</sup></sub>
 <table>
 <tr>
   <th>Component</th>
@@ -161,25 +161,25 @@
 </tr>
 </table>
 
-## 💡 Key Features
+## 💫 Key Features ✨
 <div align="center">
   <table>
     <tr>
-      <td align="center">⚡<br>Power Efficient</td>
-      <td align="center">🌙<br>Night Mode</td>
-      <td align="center">🔄<br>Auto Update</td>
-      <td align="center">📊<br>Battery Monitor</td>
+      <td align="center">⚡️<br><span style="color: #4CAF50">Power Efficient</span></td>
+      <td align="center">🌙<br><span style="color: #2196F3">Night Mode</span></td>
+      <td align="center">🔄<br><span style="color: #FF9800">Auto Update</span></td>
+      <td align="center">📊<br><span style="color: #9C27B0">Battery Monitor</span></td>
     </tr>
     <tr>
-      <td>60s Deep Sleep</td>
-      <td>Light Sensor Based</td>
-      <td>Daily NTP Sync</td>
-      <td>Voltage Tracking</td>
+      <td><span style="color: #4CAF50">60s Deep Sleep</span></td>
+      <td><span style="color: #2196F3">Light Sensor Based</span></td>
+      <td><span style="color: #FF9800">Daily NTP Sync</span></td>
+      <td><span style="color: #9C27B0">Voltage Tracking</span></td>
     </tr>
   </table>
 </div>
 
-## 📈 System Architecture
+## 📈 System Architecture 🔄
 ```mermaid
 graph TD
     A[Wake Up] --> B{Check Light}
@@ -191,7 +191,7 @@ graph TD
     G --> H[Deep Sleep]
 ```
 
-## 🚀 Quick Start
+## 🚀 Quick Start 🎯
 <details>
 <summary>Prerequisites</summary>
 
@@ -215,7 +215,7 @@ const char *password = "Your_PASSWORD";
 4. Upload code
 </details>
 
-## 🔋 Battery Performance
+## 🔋 Battery Performance ⚡
 <div align="center">
 <table>
   <tr>
@@ -299,7 +299,7 @@ const char *password = "Your_PASSWORD";
 </table>
 </div>
 
-## 📷 Gallery
+## 📸 Gallery 🖼️
 <div align="center">
 <table border="0" cellspacing="0" cellpadding="10">
   <tr>
@@ -341,7 +341,7 @@ const char *password = "Your_PASSWORD";
 </table>
 </div>
 
-## 🛠️ Development
+## ⚙️ Development 🔧
 <details>
 <summary>Build Requirements</summary>
 
@@ -358,34 +358,34 @@ const char *password = "Your_PASSWORD";
 - 📊 Test points available for voltage monitoring (just lift the cover)
 </details>
 
-## 📱 Connectivity
+## 🌐 Connectivity 📡
 - 📡 WiFi6 2.4GHz
 - 🕒 NTP synchronization
 - 🔄 Daily updates
 - 💤 Auto sleep when inactive
 
-## 🔬 Technical Details
-- 📊 ADC Resolution: 12-bit
-- 🔌 I2C Speed: 400kHz
-- 🔋 Power Modes:
-  - Active
-  - Deep Sleep
+## 🔬 Technical Details 📊
+- 📈 ADC Resolution: 12-bit
+- ⚡ I2C Speed: 400kHz
+- 🔌 Power Modes:
+  - 🟢 Active
+  - 💤 Deep Sleep
 
-## ⚠️ Important Notes & Warnings
+## ⚠️ Important Notes & Warnings 🚨
 
-### DS3231 Battery Safety
+### 🔄 DS3231 Battery Safety ⚡
 <div align="center">
 <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x8.jpeg" width="300"><br>
 Most DS3231 modules are sold with CR2032 or similar cells which are not rechargeable. If you are using a non-rechargeable cell then remove either the resistor or the diode marked in the above image.
 </div>
 
-### TP5000 Charging Configuration
+### 🔌 TP5000 Charging Configuration ⚡
 <div align="center">
 <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x9.png" width="300"><br>
 There are some misinformation over internet regarding the charging mode of TP5000. If you are going to use LiFePO4 cell with TP5000 then do not short the above marked area with caption F.
 </div>
 
-### Battery Configuration Safety
+### 🔋 Battery Configuration Safety 🛡️
 
 ### Power Management Considerations
 - ⚡ **Current Draw**: This project's extremely low current consumption (well below rated cell capacity) makes the cell configuration safer
@@ -422,7 +422,7 @@ There are some misinformation over internet regarding the charging mode of TP500
 > ⚠️ **Please consider these points carefully before replicating this setup. Battery safety is crucial!**
 ---
 
-## 📜 License
+## 📜 License 📃
 <details>
 <summary>GNU General Public License v3.0</summary>
 
@@ -445,7 +445,7 @@ This project is licensed under the GNU GPL v3.0 - see below for details:
 [Read full license](/LICENSE)
 </details>
 
-## 🤝 Contributing
+## 🤝 Contributing 👥
 We welcome contributions! Here's how you can help:
 
 1. 🔍 Fork the repository
@@ -462,5 +462,5 @@ We welcome contributions! Here's how you can help:
 - ✅ Add comments where necessary
 ---
 <div align="center">
-<p>Made with ❤️ and ♻️ materials</p>
+<p>Made with ❤️ and ♻️ materials by 🌍 Earth-conscious developers</p>
 </div>
