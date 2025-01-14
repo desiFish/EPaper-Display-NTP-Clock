@@ -95,9 +95,10 @@
     • Bluetooth: BLE 5.0<br>
     • GPIO: 11 pins<br>
     • Size: 21x17.5mm<br>
-    • Deep Sleep: ~45µA
+    • Deep Sleep: ~43µA (when powered via BAT pins)<br>
+    • Note: Deep sleep current specified when battery connected to BAT pins
   </td>
-  <td>Ultra-compact IoT controller with low power consumption and built-in wireless capabilities</td>
+  <td>Ultra-compact IoT controller with low power consumption and built-in wireless capabilities. ESP32 C6 variant achieves ~14µA in deep sleep.</td>
 </tr>
 <tr>
   <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/epd.jpg" width="100"><br>Waveshare 3.52" E-Paper</td>
