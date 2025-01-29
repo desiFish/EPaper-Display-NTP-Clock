@@ -3,7 +3,7 @@
     "configurations": [
         {
             "name": "Arduino",
-            "compilerPath": "D:\\Arduino\\az\\Arduino\\hardware\\tools\\avr\\bin\\avr-g++",
+            "compilerPath": "C:\\Users\\anike\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp-rv32\\2405/bin/riscv32-esp-elf-g++",
             "compilerArgs": [
                 "-w",
                 "-std=gnu++11",
@@ -15,14 +15,6 @@
                 "-Wno-error=narrowing"
             ],
             "intelliSenseMode": "gcc-x64",
-            "includePath": [
-                "D:\\Arduino\\az\\Arduino\\hardware\\arduino\\avr\\cores\\arduino",
-                "D:\\Arduino\\az\\Arduino\\hardware\\arduino\\avr\\variants\\standard",
-                "D:\\Arduino\\az\\Arduino\\hardware\\arduino\\avr\\libraries\\SPI\\src",
-                "d:\\arduino\\az\\arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\7.3.0\\include",
-                "d:\\arduino\\az\\arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\7.3.0\\include-fixed",
-                "d:\\arduino\\az\\arduino\\hardware\\tools\\avr\\avr\\include"
-            ],
             "forcedInclude": [
                 "D:\\Arduino\\az\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
             ],
@@ -532,6 +524,10 @@
                 "__ATOMIC_RELEASE=3",
                 "__BUILTIN_AVR_FMUL=1",
                 "USBCON"
+            ],
+            "includePath": [
+                "C:/Users/anike/OneDrive/Documents/Arduino/libraries/**",
+                "C:/Users/anike/AppData/Local/Arduino15/packages/**"
             ]
         }
     ]

@@ -31,20 +31,21 @@
 #include <Arduino.h>
 
 // Pin definition
-#define RST_PIN         4
-#define DC_PIN          3
-#define CS_PIN          SS
-#define BUSY_PIN        5
-#define PWR_PIN         6
+#define RST_PIN D2  // 4
+#define DC_PIN D1   // 3
+#define CS_PIN D7   // SS
+#define BUSY_PIN D3 // 5
+#define PWR_PIN D4  // 6
 
-class EpdIf {
+class EpdIf
+{
 public:
     EpdIf(void);
     ~EpdIf(void);
 
-    static int  IfInit(void);
-    static void DigitalWrite(int pin, int value); 
-    static int  DigitalRead(int pin);
+    static int IfInit(void);
+    static void DigitalWrite(int pin, int value);
+    static int DigitalRead(int pin);
     static void DelayMs(unsigned int delaytime);
     static void SpiTransfer(unsigned char data);
 };

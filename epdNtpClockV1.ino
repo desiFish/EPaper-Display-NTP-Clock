@@ -33,13 +33,12 @@ Copyright (C) 2024 desiFish
 #include <BH1750.h>
 
 // powersave wifi off
-#include <esp_wifi.h>
+#include "esp_wifi.h"
 
 Preferences pref; // preference library object
 
 RTC_DS3231 rtc;          // ds3231 object
 BH1750 lightMeter(0x23); // Initalize light sensor
-int nightFlag = 0;       // remembers last state of clocl i.e. sleeping or not
 
 #define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */
 int TIME_TO_SLEEP = 60;        // in seconds
@@ -47,18 +46,23 @@ int TIME_TO_SLEEP = 60;        // in seconds
 #define BATPIN A0                // battery voltage divider connection pin (1M Ohm with 104 Capacitor)
 #define BATTERY_LEVEL_SAMPLING 4 // number of times to average the reading
 
-// battery related settings
-#define battChangeThreshold 0.15
-#define battUpperLim 3.3
-#define battHigh 3.4
-#define battLow 2.9
+// System configuration constants
+#define WIFI_CONNECT_TIMEOUT 10000 // Timeout for WiFi connection attempts (ms)
+#define CPU_FREQ_NORMAL 80         // CPU frequency during active operations (MHz)
+#define CPU_FREQ_SLEEP 20          // CPU frequency during sleep mode (MHz)
+#define BATTERY_LEVEL_SAMPLING 4   // Number of ADC samples for battery voltage averaging
+
+// Battery monitoring thresholds (Volts)
+#define battChangeThreshold 0.15 // Minimum voltage change to update reading
+#define battUpperLim 3.3         // Upper limit for normal battery operation
+#define battHigh 3.4             // Full battery threshold
+#define battLow 2.9              // Low battery threshold
 
 const char *ssid = "SonyBraviaX400";
 const char *password = "79756622761";
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "asia.pool.ntp.org", 19800); // 19800 is offset of India, asia.pool.ntp.org is close to India
-char daysOfTheWeek[7][10] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 #define COLORED 0
 #define UNCOLORED 1
@@ -67,7 +71,11 @@ UBYTE image[68000];
 Epd epd;
 
 bool errFlag = false;
-// takes samples based on BATTERY_LEVEL_SAMPLING, averages them and returns actual battery voltage
+/**
+ * @brief Measures battery voltage with averaging
+ * @return float Actual battery voltage in volts
+ * @note Uses multiple samples to reduce noise
+ */
 float batteryLevel()
 {
   uint32_t Vbatt = 0;
@@ -81,39 +89,132 @@ float batteryLevel()
   return (Vbattf);
 }
 
+#define WIFI_CONNECT_TIMEOUT 10000 // 10 seconds timeout
+#define CPU_FREQ_NORMAL 80
+#define CPU_FREQ_SLEEP 20
+static const char daysOfTheWeek[7][10] PROGMEM = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+/**
+ * @brief Enables WiFi with power-optimized settings
+ * @note Includes timeout and CPU frequency management
+ */
 void enableWiFi()
 {
-  // adc_power_on();
-  WiFi.disconnect(false); // Reconnect the network
-  WiFi.mode(WIFI_STA);    // Switch WiFi off
-
-  Serial1.println("START WIFI");
+  setCpuFrequencyMhz(CPU_FREQ_NORMAL);
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
-  while (WiFi.waitForConnectResult() != WL_CONNECTED)
+  unsigned long startAttemptTime = millis();
+  while (WiFi.status() != WL_CONNECTED &&
+         millis() - startAttemptTime < WIFI_CONNECT_TIMEOUT)
   {
-    Serial.println("Connection Failed");
-    break;
+    delay(100);
   }
-  Serial1.println("IP address: ");
-  Serial1.println(WiFi.localIP());
+
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    disableWiFi();
+  }
 }
 
+/**
+ * @brief Disables WiFi and other wireless interfaces to save power
+ * @note Also configures CPU for low-power operation
+ */
 void disableWiFi()
 {
-  // adc_power_off();
-  WiFi.disconnect(true); // Disconnect from the network
-  WiFi.mode(WIFI_OFF);   // Switch WiFi off
+  WiFi.disconnect(true);
+  WiFi.mode(WIFI_OFF);
+  esp_wifi_stop();
+  btStop();
+  setCpuFrequencyMhz(CPU_FREQ_SLEEP);
 }
 
+/**
+ * @brief Updates RTC time from NTP server if necessary
+ *
+ * This function checks if an update is needed based on the following criteria:
+ * 1. If it's the first run (lastUpdateDay is 0)
+ * 2. If 20 days have passed since the last update
+ * 3. If a force update is requested
+ *
+ * It handles month rollovers when calculating days passed.
+ * If an update is needed and WiFi is connected, it fetches the current time
+ * from an NTP server and updates the RTC.
+ *
+ * @param forceUpdate If true, bypasses the normal update interval check
+ * @return bool Returns true if the time was successfully updated, false otherwise
+ * @note Requires an active WiFi connection to function
+ * @note Uses Preferences to store the last update day
+ */
+bool autoTimeUpdate(bool forceUpdate = false)
+{
+  if (!pref.isKey("lastUpdateDay"))
+    pref.putUChar("lastUpdateDay", 0);
+
+  byte lastUpdateDay = pref.getUChar("lastUpdateDay", 0);
+  DateTime now = rtc.now();
+  byte currentDay = now.day();
+
+  // Calculate days passed, handling month rollover
+  int daysPassed = (currentDay - lastUpdateDay + 31) % 31; // Handle month rollover
+
+  // Check if 20 days have passed since last update
+  if (lastUpdateDay == 0 || daysPassed >= 20 || forceUpdate)
+  {
+    enableWiFi();
+    if (WiFi.status() == WL_CONNECTED)
+    {
+      timeClient.begin();
+      if (timeClient.update() && timeClient.isTimeSet())
+      {
+        time_t rawtime = timeClient.getEpochTime();
+        struct tm *ti = localtime(&rawtime);
+
+        uint16_t year = ti->tm_year + 1900;
+        uint8_t month = ti->tm_mon + 1;
+        uint8_t day = ti->tm_mday;
+
+        rtc.adjust(DateTime(year, month, day,
+                            timeClient.getHours(),
+                            timeClient.getMinutes(),
+                            timeClient.getSeconds()));
+
+        // Update last update day
+        pref.putUChar("lastUpdateDay", currentDay);
+        Serial.println("RTC updated: " + String(year) + "-" +
+                       String(month) + "-" + String(day));
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * @brief Pads single digit numbers with leading zero
+ * @param num Number to pad
+ * @return String Padded number as string
+ */
+String padNum(int num)
+{
+  return (num < 10 ? "0" : "") + String(num);
+}
+
+/**
+ * @brief Main setup function - runs once at startup/wake
+ * @note Device enters deep sleep after completing operations
+ */
 void setup()
 {
-  // put your setup code here, to run once:
+  disableWiFi(); // Initialize peripherals with power-optimized settings
   Serial.begin(115200);
-  pinMode(BATPIN, INPUT);
   Wire.begin();
-  Wire.setClock(400000); // Set clock speed to be the fastest for better communication (fast mode)
-  disableWiFi();
+  analogReadResolution(12);
+  Serial.println(getCpuFrequencyMhz());
+  pinMode(BATPIN, INPUT);
+
+  pref.begin("database", false);
 
   if (!rtc.begin())
   {
@@ -141,21 +242,18 @@ void setup()
   Serial.print(lux);
   Serial.println(" lx");
 
-  pref.begin("database", false);
-
-  bool checkFlag = pref.isKey("nightFlag");
-  if (!checkFlag)
+  if (!pref.isKey("nightFlag"))
   { // create key:value pair
-    pref.putBool("nightFlag", "");
+    pref.putBool("nightFlag", false);
   }
-  nightFlag = pref.getBool("nightFlag", false);
-  bool tempNightFlag = nightFlag, timeNeedsUpdate = false;
+  bool nightFlag = pref.getBool("nightFlag", false); // remembers last state of clock i.e. sleeping or not
+  bool tempNightFlag = nightFlag;
 
   if (lux == 0)
   {
-    if (nightFlag == 0)
+    if (!nightFlag)
     { // prevents unnecessary redrawing of same thing
-      nightFlag = 1;
+      nightFlag = true;
       if (epd.Init() != 0)
       {
         Serial.println("e-Paper init failed");
@@ -170,77 +268,51 @@ void setup()
   }
   else
   {
-    nightFlag = 0;
-    pref.begin("database", false);
+    nightFlag = false;
 
     float battLevel;
-    battLevel = pref.getFloat("battLevel", -1.0);
-    if (battLevel == -1.0)
-    {
-      Serial.println("No value saved for battLevel");
-      pref.putFloat("battLevel", 3.5);
-    }
+    if (!pref.isKey("battLevel")) // create key:value pairs
+      pref.putFloat("battLevel", 0.0);
+    battLevel = pref.getFloat("battLevel", 0.0);
 
     float tempBattLevel = battLevel;
 
-    byte temp = int(rtc.getTemperature());
+    if (!pref.isKey("timeNeedsUpdate")) // create key:value pairs
+      pref.putBool("timeNeedsUpdate", true);
+    bool timeNeedsUpdate = pref.getBool("timeNeedsUpdate", false);
 
     DateTime now = rtc.now();
-    Serial.println(now.month(), DEC);
-    Serial.println(now.day(), DEC);
-    Serial.println(now.hour(), DEC);
-    Serial.println(now.minute(), DEC);
-    Serial.println(now.second(), DEC);
-    Serial.println(now.year(), DEC);
-
-    bool timeUpdateNeeded;
-    timeUpdateNeeded = pref.getBool("timeNeedsUpdate", false);
-
-    if ((now.year() == 2070) || rtc.lostPower() || timeUpdateNeeded)
+    if ((now.year() == 1970) || rtc.lostPower()) // if RTC lost power or not set
       timeNeedsUpdate = true;
 
-    if (timeNeedsUpdate || (now.hour() == 18 && (now.minute() == 0 || now.minute() == 1)))
-    { // updates time in RTC everyday taking from NTP
-      enableWiFi();
-      delay(50);
-      if (WiFi.status() == WL_CONNECTED)
-      {
-        timeClient.begin();
-        if (timeClient.update())
-        {
-          timeNeedsUpdate = false;
-          time_t rawtime = timeClient.getEpochTime();
-          struct tm *ti;
-          ti = localtime(&rawtime);
+    // Get the current day
+    byte currentDay = now.day();
 
-          uint16_t year = ti->tm_year + 1900;
-          uint8_t x = year % 10;
-          year = year / 10;
-          uint8_t y = year % 10;
-          year = y * 10 + x;
-
-          uint8_t month = ti->tm_mon + 1;
-
-          uint8_t day = ti->tm_mday;
-          rtc.adjust(DateTime(year, month, day, timeClient.getHours(), timeClient.getMinutes(), timeClient.getSeconds()));
-        }
-        disableWiFi();
-      }
+    // Check if we need to update time (once per day)
+    if (!pref.isKey("lastCheckedDay")) // create key:value pairs
+      pref.putUChar("lastCheckedDay", 0);
+    byte lastCheckedDay = pref.getUChar("lastCheckedDay", 0);
+    if ((lastCheckedDay != currentDay) || timeNeedsUpdate)
+    {
+      Serial.println("Updating time from NTP server");
+      if (autoTimeUpdate(timeNeedsUpdate)) // Update time from NTP server
+        Serial.println("Time updated");
+      else
+        Serial.println("Time Not updated");
+      disableWiFi(); // Turn off WiFi to save power
+      timeNeedsUpdate = false;
+      pref.putBool("timeNeedsUpdate", false);
+      lastCheckedDay = currentDay; // Update last checked day
+      pref.putUChar("lastCheckedDay", lastCheckedDay);
     }
+    else
+      Serial.println("Time already updated");
 
-    // Battery level
+    // Battery level handling
     float newBattLevel = batteryLevel();
-    if (newBattLevel < battLevel) // to maintain steady decrease in battery level
-      battLevel = newBattLevel;
-
-    if (((newBattLevel - battLevel) >= battChangeThreshold) || newBattLevel > battUpperLim) // to update the battery level in case of charging
-      battLevel = newBattLevel;
-
-    byte percent = ((battLevel - battLow) / (battHigh - battLow)) * 100; // range is 3.4v-100% and 2.7v-0%
-    if (percent < 1)
-      percent = 1;
-    else if (percent > 100)
-      percent = 100;
+    battLevel = (newBattLevel < battLevel) ? newBattLevel : ((newBattLevel - battLevel) >= battChangeThreshold || newBattLevel > battUpperLim) ? newBattLevel
+                                                                                                                                               : battLevel;
+    int percent = constrain(((battLevel - battLow) / (battHigh - battLow)) * 100, 0, 100);
 
     if (tempBattLevel != battLevel)
       pref.putFloat("battLevel", battLevel);
@@ -254,30 +326,12 @@ void setup()
     // battery level end
 
     bool timeFlag;
-    byte tempHour;
-    if (now.hour() > 12)
-    { // 24 hours to 12 hour conversion
-      tempHour = now.hour() - 12;
-      timeFlag = true;
-    }
-    else if (now.hour() == 12)
-    {
-      tempHour = now.hour();
-      timeFlag = true;
-    }
-    else if (now.hour() == 0)
-    {
-      tempHour = 12;
-      timeFlag = false;
-    }
-    else
-    {
-      tempHour = now.hour();
-      timeFlag = false;
-    }
+    byte tempHour = now.twelveHour();
 
-    String dateString = (now.day() < 10 ? "0" + String(now.day()) : String(now.day())) + "/" + (now.month() < 10 ? "0" + String(now.month()) : String(now.month())) + "/" + String(now.year());
-    String timeString = (tempHour < 10 ? "0" + String(tempHour) : String(tempHour)) + ":" + (now.minute() < 10 ? "0" + String(now.minute()) : String(now.minute())) + (timeFlag == true ? " PM" : " AM");
+    byte temp = int(rtc.getTemperature());
+
+    String dateString = padNum(now.day()) + "/" + padNum(now.month()) + "/" + String(now.year());
+    String timeString = padNum(tempHour) + ":" + padNum(now.minute()) + (now.isPM() ? " PM" : " AM");
     if (epd.Init() != 0)
     {
       Serial.println("e-Paper init failed");
@@ -295,14 +349,14 @@ void setup()
   if (tempNightFlag != nightFlag)
     pref.putBool("nightFlag", nightFlag);
 
-  pref.putBool("timeNeedsUpdate", timeNeedsUpdate);
+  pref.end(); // Close the preferences
 
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
   Serial.println("Setup ESP32 to sleep for every " + String(TIME_TO_SLEEP / 60) + " Mins");
   // Go to sleep now
   Serial.println("Going to sleep now");
   Serial.flush();
-  delay(50);
+  delay(5);
   esp_deep_sleep_start();
 }
 
@@ -312,6 +366,11 @@ void loop()
 }
 
 // various error msg display function
+/**
+ * @brief Displays error or status messages
+ * @param msg Message to display
+ * @note Optimized for minimum display updates
+ */
 void showMsg(String msg)
 {
   epd.display_NUM(EPD_3IN52_WHITE);
@@ -336,7 +395,19 @@ void showMsg(String msg)
 }
 
 // Displays time, battery info. First para is week in const char, then time in hh:mm am/pm, then date in dd/mm/yyyy, then battlevel in X.YZV, percent in XY%
-void showTime(char *w, String timeString, String dateString, String battLevel, String percentStr, byte percent, String temp)
+/**
+ * @brief Updates display with time and status information
+ * @param w Weekday string (const)
+ * @param timeString Formatted time string
+ * @param dateString Formatted date string
+ * @param battLevel Battery voltage string
+ * @param percentStr Battery percentage string
+ * @param percent Battery percentage value for icon
+ * @param temp Temperature string
+ * @note Implements power-efficient display update strategy
+ */
+void showTime(const char *w, String timeString, String dateString,
+              String battLevel, String percentStr, byte percent, String temp)
 {
   epd.display_NUM(EPD_3IN52_WHITE);
   epd.lut_GC();
@@ -349,27 +420,33 @@ void showTime(char *w, String timeString, String dateString, String battLevel, S
   paint.SetRotate(3);           // Top right (0,0)
   paint.Clear(UNCOLORED);
 
-  // Battery icon
+  // Battery icon outline
   paint.DrawRectangle(10, 4, 26, 12, COLORED);
   paint.DrawRectangle(8, 6, 10, 10, COLORED);
 
-  if (percent >= 95) // Full
-    paint.DrawFilledRectangle(11, 4, 25, 11, COLORED);
-  else if (percent >= 85 && percent < 95) // ful-Med
-    paint.DrawFilledRectangle(13, 4, 25, 11, COLORED);
-  else if (percent >= 70 && percent < 85) // Med
-    paint.DrawFilledRectangle(15, 4, 25, 11, COLORED);
-  else if (percent > 50 && percent < 70) // Med-half
-    paint.DrawFilledRectangle(17, 4, 25, 11, COLORED);
-  else if (percent > 30 && percent <= 50) // half
-    paint.DrawFilledRectangle(19, 4, 25, 11, COLORED);
-  else if (percent > 10 && percent <= 30) // low-half
-    paint.DrawFilledRectangle(21, 4, 25, 11, COLORED);
-  else if (percent > 5 && percent <= 10) // low
-    paint.DrawFilledRectangle(23, 4, 25, 11, COLORED);
-  else if (percent > 2 && percent <= 5) // critical-low
-    paint.DrawFilledRectangle(25, 4, 25, 11, COLORED);
-  // END Battery ICON
+  // Battery fill level
+  byte fillX = 25; // Default to empty (rightmost position)
+  if (percent > 0)
+  {
+    if (percent >= 95)
+      fillX = 11; // Full
+    else if (percent >= 85)
+      fillX = 13; // Full-Med
+    else if (percent >= 70)
+      fillX = 15; // Med
+    else if (percent > 50)
+      fillX = 17; // Med-half
+    else if (percent > 30)
+      fillX = 19; // Half
+    else if (percent > 10)
+      fillX = 21; // Low-half
+    else if (percent > 5)
+      fillX = 23; // Low
+    else if (percent > 2)
+      fillX = 25; // Critical
+
+    paint.DrawFilledRectangle(fillX, 4, 25, 11, COLORED);
+  }
 
   paint.DrawStringAt(325, 5, percentStr.c_str(), &Font12, COLORED);
   paint.DrawStringAt(280, 5, battLevel.c_str(), &Font12, COLORED);
