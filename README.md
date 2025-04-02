@@ -258,16 +258,16 @@ const char *password = "Your_PASSWORD";
   </tr>
   <tr>
     <td>November 1, 2024</td>
-    <td>Coming Soon</td>
-    <td>In Progress</td>
-    <td>⏳ Running</td>
+    <td>April 2, 2025</td>
+    <td>5 months 2 days</td>
+    <td>✅ Completed</td>
   </tr>
   <tr>
     <td colspan="4">
       <strong>Performance Metrics</strong><br>
       🔋 Initial Voltage: 3.6V<br>
-      📉 Final Voltage: TBD<br>
-      🌡️ Temperature Range: Monitoring...
+      📉 Final Voltage: 2.79V<br>
+      🌡️ Temperature Range: 15-36°C
     </td>
   </tr>
 </table>
