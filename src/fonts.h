@@ -47,8 +47,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include <stdint.h>
 
-// Fix typedef struct syntax for C++
-// typedef struct sFONT {
 struct sFONT
 {
   const uint8_t *table;
@@ -56,13 +54,11 @@ struct sFONT
   uint16_t Height;
 };
 
-// Define Font variables
-extern sFONT Font24;
-extern sFONT Font20;
-extern sFONT Font16;
-extern sFONT Font12;
-extern sFONT Font8;
-extern sFONT Font48;
+// Define Font variables - only declare the ones actually used in the code
+extern sFONT Font48; // Used for main text
+extern sFONT Font24; // Used for temperature
+extern sFONT Font12; // Used for battery info
+extern sFONT Font8;  // Used for degree symbol
 
 #endif /* __FONTS_H */
 

@@ -43,13 +43,13 @@ BH1750 lightMeter(0x23); // Initalize light sensor
 #define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */
 int TIME_TO_SLEEP = 60;        // in seconds
 
-#define BATPIN A0                // battery voltage divider connection pin (1M Ohm with 104 Capacitor)
-#define BATTERY_LEVEL_SAMPLING 4 // number of times to average the reading
+#define BATPIN A0 // battery voltage divider connection pin (1M Ohm with 104 Capacitor)
 
 // System configuration constants
 #define WIFI_CONNECT_TIMEOUT 10000 // Timeout for WiFi connection attempts (ms)
 #define CPU_FREQ_NORMAL 80         // CPU frequency during active operations (MHz)
 #define CPU_FREQ_SLEEP 20          // CPU frequency during sleep mode (MHz)
+#define BATTERY_LEVEL_SAMPLING 4   // Number of ADC samples for battery voltage averaging
 
 // Battery monitoring thresholds (Volts)
 #define battChangeThreshold 0.15 // Minimum voltage change to update reading
@@ -351,7 +351,7 @@ void setup()
   Serial.println("Going to sleep now");
   Serial.flush();
   delay(5);
-  // esp_deep_sleep_start();
+  esp_deep_sleep_start();
 }
 
 void loop()
