@@ -284,17 +284,17 @@ const char *password = "Your_PASSWORD";
     <td><strong>Status</strong></td>
   </tr>
   <tr>
-    <td>Coming Soon</td>
-    <td>Coming Soon</td>
-    <td>Coming Soon</td>
-    <td>Coming Soon</td>
+    <td>April 5, 2025</td>
+    <td>TBD</td>
+    <td>TBD</td>
+    <td>TBD</td>
   </tr>
   <tr>
     <td colspan="4">
       <strong>Performance Metrics</strong><br>
-      🔋 Initial Voltage: 3.6V<br>
+      🔋 Initial Voltage: 3.4V (Resting)<br>
       📉 Final Voltage: TBD<br>
-      🌡️ Temperature Range: Coming Soon
+      🌡️ Temperature Range: TBD
     </td>
   </tr>
 </table>
