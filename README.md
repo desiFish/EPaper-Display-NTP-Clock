@@ -399,10 +399,9 @@ There are some misinformation over internet regarding the charging mode of TP500
   - This is a temporary solution until better 1S LFP BMS options become available
 
 ### USB Charging Safety
-- ⚡ **USB Connection Warning**: Disconnect battery when connecting USB to ESP32C3
+- ⚡ **USB Connection Warning**: Disconnect battery when connecting USB to ESP32C6 (Use a switch to cutt-off battery)
   - XIAO modules are designed for LiPo/Li-ion batteries (4.2V charging)
   - Not compatible with LFP battery charging (3.6V required)
-  - Dedicated USB-C module recommended
   - Connect USB-C module output to TP5000 input
   - Detailed schematics will be provided later
   - Simple setup despite complex explanation
