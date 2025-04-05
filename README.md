@@ -464,5 +464,5 @@ We welcome contributions! Here's how you can help:
 - ✅ Add comments where necessary
 ---
 <div align="center">
-<p>Made with ❤️ and ♻️ materials by 🌍 Earth-conscious developers</p>
+<p>Made with ❤️ and ♻️ materials by 🌍 Earth-conscious developer</p>
 </div>
