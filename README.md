@@ -1,7 +1,7 @@
 <div align="center">
   <h1>🌟 Minimalistic E-Paper NTP-RTC Clock 🕒</h1>
   <p>
-    <img src="https://img.shields.io/badge/ESP32-C3-blue?style=flat-square&logo=espressif"/>
+    <img src="https://img.shields.io/badge/ESP32-C6-blue?style=flat-square&logo=espressif"/>
     <img src="https://img.shields.io/badge/Battery-6000mAh-green?style=flat-square"/>
     <img src="https://img.shields.io/badge/Display-3.52%22-orange?style=flat-square"/>
     <img src="https://img.shields.io/badge/Eco-Friendly-brightgreen?style=flat-square"/>
@@ -25,7 +25,7 @@
   </tr>
   <tr>
     <td>🧠 Microcontroller</td>
-    <td>Xiao ESP32 C3 (Compatible with most ESP32 boards)</td>
+    <td>Xiao ESP32 C6 (Compatible with most ESP32 boards)</td>
   </tr>
   <tr>
     <td>📺 Display</td>
@@ -53,7 +53,7 @@
     <td>Battery Thresholds</td>
     <td>
       📈 High: 3.4V<br>
-      📉 Low: 2.9V
+      📉 Low: 2.8V
     </td>
   </tr>
 </table>
@@ -85,20 +85,18 @@
   <th>Details</th>
 </tr>
 <tr>
-  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/esp32c3.jpg" width="100"><br>Xiao ESP32 C3</td>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/esp32c6.jpg" width="100"><br>Xiao ESP32 C3</td>
   <td>
-    • MCU: ESP32-C3 RISC-V<br>
+    • MCU: ESP32-C6 RISC-V<br>
     • Clock: 160MHz<br>
-    • RAM: 400KB SRAM<br>
+    • RAM: 512KB SRAM<br>
     • Flash: 4MB<br>
-    • WiFi: 2.4GHz<br>
+    • WiFi: 2.4GHz (WiFi6)<br>
     • Bluetooth: BLE 5.0<br>
-    • GPIO: 11 pins<br>
-    • Size: 21x17.5mm<br>
-    • Deep Sleep: ~43µA (when powered via BAT pins)<br>
+    • Size: 21x17.8mm<br>
+    • Deep Sleep: ~16µA (when powered via BAT pins)<br>
     • Note: Deep sleep current specified when battery connected to BAT pins
   </td>
-  <td>Ultra-compact IoT controller with low power consumption and built-in wireless capabilities. ESP32 C6 variant achieves ~14µA in deep sleep.</td>
 </tr>
 <tr>
   <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/epd.jpg" width="100"><br>Waveshare 3.52" E-Paper</td>
@@ -218,9 +216,11 @@ const char *password = "Your_PASSWORD";
 
 ## 🔋 Battery Performance ⚡
 <div align="center">
+<details>
+<summary>📊 Battery Life Analysis - Test #1 (With ESP32 C3)</summary>
 <table>
   <tr>
-    <th colspan="4">📊 Battery Life Analysis - Test #1 (With ESP32 C3)</th>
+    <th colspan="4"></th>
   </tr>
   <tr>
     <td><strong>Start Date</strong></td>
@@ -243,6 +243,7 @@ const char *password = "Your_PASSWORD";
     </td>
   </tr>
 </table>
+</details>
 
 <br>
 
