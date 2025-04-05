@@ -95,8 +95,8 @@
     • Bluetooth: BLE 5.0<br>
     • Size: 21x17.8mm<br>
     • Deep Sleep: ~16µA (when powered via BAT pins)<br>
-    • Note: Deep sleep current specified when battery connected to BAT pins
   </td>
+  <td>Note: Deep sleep current specified when battery connected to BAT pins</td>
 </tr>
 <tr>
   <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/epd.jpg" width="100"><br>Waveshare 3.52" E-Paper</td>
