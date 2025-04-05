@@ -31,11 +31,11 @@
 #include <Arduino.h>
 
 // Pin definition
-#define RST_PIN D2  // 4
-#define DC_PIN D1   // 3
-#define CS_PIN D7   // SS
-#define BUSY_PIN D3 // 5
-#define PWR_PIN D4  // 6
+#define RST_PIN D2  // for xiaoesp32c3 4
+#define DC_PIN D1   // for xiaoesp32c3 3
+#define CS_PIN D7   // for xiaoesp32c3 SS
+#define BUSY_PIN D3 // for xiaoesp32c3 5
+#define PWR_PIN D4  // for xiaoesp32c3 6
 
 class EpdIf
 {

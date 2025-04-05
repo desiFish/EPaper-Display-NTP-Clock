@@ -85,7 +85,7 @@
   <th>Details</th>
 </tr>
 <tr>
-  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/esp32c6.jpg" width="100"><br>Xiao ESP32 C3</td>
+  <td><img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/esp32c6.jpg" width="100"><br>Xiao ESP32 C6</td>
   <td>
     • MCU: ESP32-C6 RISC-V<br>
     • Clock: 160MHz<br>
@@ -247,10 +247,9 @@ const char *password = "Your_PASSWORD";
 
 <br>
 
+<details>
+<summary>📊 Battery Life Analysis - Test #2 (With ESP32 C3)</summary>
 <table>
-  <tr>
-    <th colspan="4">📊 Battery Life Analysis - Test #2</th>
-  </tr>
   <tr>
     <td><strong>Start Date</strong></td>
     <td><strong>End Date</strong></td>
@@ -272,6 +271,8 @@ const char *password = "Your_PASSWORD";
     </td>
   </tr>
 </table>
+</details>
+
 <br>
 
 <table>
