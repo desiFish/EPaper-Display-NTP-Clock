@@ -50,7 +50,6 @@ int TIME_TO_SLEEP = 60;        // in seconds
 #define WIFI_CONNECT_TIMEOUT 10000 // Timeout for WiFi connection attempts (ms)
 #define CPU_FREQ_NORMAL 80         // CPU frequency during active operations (MHz)
 #define CPU_FREQ_SLEEP 20          // CPU frequency during sleep mode (MHz)
-#define BATTERY_LEVEL_SAMPLING 4   // Number of ADC samples for battery voltage averaging
 
 // Battery monitoring thresholds (Volts)
 #define battChangeThreshold 0.15 // Minimum voltage change to update reading
@@ -88,10 +87,7 @@ float batteryLevel()
   // Serial.println(Vbattf);
   return (Vbattf);
 }
-
-#define WIFI_CONNECT_TIMEOUT 10000 // 10 seconds timeout
-#define CPU_FREQ_NORMAL 80
-#define CPU_FREQ_SLEEP 20
+// Weekday names for display
 static const char daysOfTheWeek[7][10] PROGMEM = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 /**
@@ -100,7 +96,6 @@ static const char daysOfTheWeek[7][10] PROGMEM = {"Sunday", "Monday", "Tuesday",
  */
 void enableWiFi()
 {
-  setCpuFrequencyMhz(CPU_FREQ_NORMAL);
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
@@ -127,7 +122,6 @@ void disableWiFi()
   WiFi.mode(WIFI_OFF);
   esp_wifi_stop();
   btStop();
-  setCpuFrequencyMhz(CPU_FREQ_SLEEP);
 }
 
 /**
@@ -207,14 +201,13 @@ String padNum(int num)
  */
 void setup()
 {
+  setCpuFrequencyMhz(80);
   disableWiFi(); // Initialize peripherals with power-optimized settings
   Serial.begin(115200);
-  Wire.begin();
-  analogReadResolution(12);
-  Serial.println(getCpuFrequencyMhz());
   pinMode(BATPIN, INPUT);
-
-  pref.begin("database", false);
+  Wire.begin();
+  Wire.setClock(400000); // Set I2C clock speed to 400kHz
+  analogReadResolution(12);
 
   if (!rtc.begin())
   {
@@ -241,6 +234,8 @@ void setup()
   Serial.print("Light: ");
   Serial.print(lux);
   Serial.println(" lx");
+
+  pref.begin("database", false); // Open Preferences with namespace "database"
 
   if (!pref.isKey("nightFlag"))
   { // create key:value pair
@@ -325,7 +320,6 @@ void setup()
 
     // battery level end
 
-    bool timeFlag;
     byte tempHour = now.twelveHour();
 
     byte temp = int(rtc.getTemperature());
@@ -357,7 +351,7 @@ void setup()
   Serial.println("Going to sleep now");
   Serial.flush();
   delay(5);
-  esp_deep_sleep_start();
+  // esp_deep_sleep_start();
 }
 
 void loop()
