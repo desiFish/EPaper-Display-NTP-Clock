@@ -367,6 +367,8 @@ const char *password = "Your_PASSWORD";
 - 💤 Auto sleep when dark
 
 ### 🌙 Deep Sleep Implementation with DS3231 RTC
+> ⚠️ **Important Note**: No single source provided a complete working solution for deep sleep with DS3231 RTC. This implementation combines key elements from multiple references to create a reliable solution.
+
 The project implements an efficient deep sleep mode using the DS3231 RTC's external alarm feature. This approach significantly reduces power consumption while maintaining accurate timekeeping.
 
 #### How it Works
@@ -380,9 +382,10 @@ The project implements an efficient deep sleep mode using the DS3231 RTC's exter
 - Current Consumption: ~16µA in deep sleep (for XIAO ESP32C6 only)
 
 #### References
-1. [ESP32 Wake-Up Using DS3231 RTC](https://randomnerdtutorials.com/esp32-wake-up-deep-sleep-external-alarms-ds3231/)
-2. [XIAO ESP32C6 Deep Sleep Guide](https://wiki.seeedstudio.com/xiao_esp32c6_getting_started/#demo1-deep-sleep-with-external-wake-up)
-3. [ESP32 External Wake-Up Implementation](https://randomnerdtutorials.com/esp32-external-wake-up-deep-sleep/)
+These sources were combined to create a working implementation:
+1. [ESP32 Wake-Up Using DS3231 RTC](https://randomnerdtutorials.com/esp32-wake-up-deep-sleep-external-alarms-ds3231/) - Basic RTC alarm setup
+2. [XIAO ESP32C6 Deep Sleep Guide](https://wiki.seeedstudio.com/xiao_esp32c6_getting_started/#demo1-deep-sleep-with-external-wake-up) - ESP32-C6 specific wake-up configuration
+3. [ESP32 External Wake-Up Implementation](https://randomnerdtutorials.com/esp32-external-wake-up-deep-sleep/) - External wake-up pin handling
 
 ## ⚠️ Important Notes & Warnings 🚨
 
