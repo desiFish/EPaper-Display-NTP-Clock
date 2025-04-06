@@ -23,6 +23,7 @@ Copyright (C) 2024 desiFish
 
 #include <Wire.h>
 #include "RTClib.h"
+#include "driver/rtc_io.h"
 
 #include <WiFi.h>
 
@@ -35,10 +36,17 @@ Copyright (C) 2024 desiFish
 // powersave wifi off
 #include "esp_wifi.h"
 
+// Define the DS3231 Interrupt pin (will wake-up the ESP32 - must be an RTC GPIO)
+#define BUTTON_PIN_BITMASK(GPIO7) (1ULL << GPIO7) // 2 ^ GPIO_NUMBER in hex
+#define CLOCK_INTERRUPT_PIN GPIO_NUM_7
+
 Preferences pref; // preference library object
 
 RTC_DS3231 rtc;          // ds3231 object
 BH1750 lightMeter(0x23); // Initalize light sensor
+
+// Set the alarm
+DateTime alarm1Time = DateTime(2025, 4, 6, 13, 35, 0);
 
 #define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */
 int TIME_TO_SLEEP = 60;        // in seconds
@@ -196,6 +204,33 @@ void setup()
   Wire.setClock(400000); // Set I2C clock speed to 400kHz
   analogReadResolution(12);
 
+  if (!rtc.begin())
+  {
+    Serial.println("Couldn't find RTC");
+    // showMsg("RTC Error");
+    errFlag += 2;
+  }
+  // We don't need the 32K Pin, so disable it
+  rtc.disable32K();
+  // Set alarm 1, 2 flag to false (so alarm 1, 2 didn't happen so far)
+  // if not done, this easily leads to problems, as both register aren't reset on reboot/recompile
+  rtc.clearAlarm(1);
+  rtc.clearAlarm(2);
+  // Stop oscillating signals at SQW Pin otherwise setAlarm1 will fail
+  rtc.writeSqwPinMode(DS3231_OFF);
+  // Turn off alarm 2 (in case it isn't off already)
+  // again, this isn't done at reboot, so a previously set alarm could easily go overlooked
+  rtc.disableAlarm(2);
+  // Schedule an alarm
+  if (!rtc.setAlarm1(alarm1Time, DS3231_A1_Second))
+  { // this mode triggers the alarm when the minutes match
+    Serial.println("Error, alarm wasn't set!");
+  }
+  else
+  {
+    Serial.println("Alarm will happen at specified time");
+  }
+
   if (lightMeter.begin(BH1750::ONE_TIME_HIGH_RES_MODE))
   {
     Serial.println(F("BH1750 Advanced begin"));
@@ -243,14 +278,6 @@ void setup()
   }
   else
   {
-
-    if (!rtc.begin())
-    {
-      Serial.println("Couldn't find RTC");
-      // showMsg("RTC Error");
-      errFlag += 2;
-    }
-
     nightFlag = false;
 
     float battLevel;
@@ -346,13 +373,19 @@ void setup()
 
   pref.end(); // Close the preferences
 
-  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+  // Configure external wake-up
+  esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK(CLOCK_INTERRUPT_PIN), ESP_EXT1_WAKEUP_ANY_LOW);
+  // Configure pullup/downs via RTCIO to tie wakeup pins to inactive level during deepsleep.
+  // The RTC SQW pin is active low
+  rtc_gpio_pulldown_dis(CLOCK_INTERRUPT_PIN);
+  rtc_gpio_pullup_en(CLOCK_INTERRUPT_PIN);
+
   Serial.println("Setup ESP32 to sleep for every " + String(TIME_TO_SLEEP / 60) + " Mins");
   // Go to sleep now
   Serial.println("Going to sleep now");
   Serial.flush();
   delay(5);
-  //esp_deep_sleep_start();
+  esp_deep_sleep_start();
 }
 
 void loop()
