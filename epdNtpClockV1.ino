@@ -38,7 +38,7 @@ Copyright (C) 2024 desiFish
 
 // Define the DS3231 Interrupt pin (will wake-up the ESP32 - must be an RTC GPIO)
 #define BUTTON_PIN_BITMASK(GPIO7) (1ULL << GPIO7) // 2 ^ GPIO_NUMBER in hex
-#define CLOCK_INTERRUPT_PIN GPIO_NUM_7
+#define CLOCK_INTERRUPT_PIN GPIO_NUM_7            // GPIO 7
 
 Preferences pref; // preference library object
 
@@ -46,24 +46,20 @@ RTC_DS3231 rtc;          // ds3231 object
 BH1750 lightMeter(0x23); // Initalize light sensor
 
 // Set the alarm
-DateTime alarm1Time = DateTime(2025, 4, 6, 13, 35, 0);
-
-#define uS_TO_S_FACTOR 1000000 /* Conversion factor for micro seconds to seconds */
-int TIME_TO_SLEEP = 60;        // in seconds
+DateTime alarm1Time = DateTime(2025, 4, 6, 13, 35, 0); // Set the alarm time (year, month, day, hour, minute, second)
 
 #define BATPIN A0 // battery voltage divider connection pin (1M Ohm with 104 Capacitor)
 
 // System configuration constants
 #define WIFI_CONNECT_TIMEOUT 10000 // Timeout for WiFi connection attempts (ms)
-#define CPU_FREQ_NORMAL 80         // CPU frequency during active operations (MHz)
-#define CPU_FREQ_SLEEP 20          // CPU frequency during sleep mode (MHz)
 #define BATTERY_LEVEL_SAMPLING 4   // Number of ADC samples for battery voltage averaging
 
 // Battery monitoring thresholds (Volts)
 #define battChangeThreshold 0.15 // Minimum voltage change to update reading
 #define battUpperLim 3.3         // Upper limit for normal battery operation
-#define battHigh 3.4             // Full battery threshold
-#define battLow 2.9              // Low battery threshold
+// you may need to adjust this value based on your readings
+#define battHigh 3.4 // Full battery threshold (ideally this is the resting voltage)
+#define battLow 2.9  // Low battery threshold
 
 const char *ssid = "SonyBraviaX400";
 const char *password = "79756622761";
@@ -333,7 +329,7 @@ void setup()
       pref.putFloat("battLevel", battLevel);
 
     String percentStr;
-    if (battLevel >= 4.0) // adjust for Li-ion battery
+    if (battLevel >= 3.7) // adjust for Li-ion battery
       percentStr = "USB";
     else
       percentStr = String(percent) + "%";
@@ -379,8 +375,6 @@ void setup()
   // The RTC SQW pin is active low
   rtc_gpio_pulldown_dis(CLOCK_INTERRUPT_PIN);
   rtc_gpio_pullup_en(CLOCK_INTERRUPT_PIN);
-
-  Serial.println("Setup ESP32 to sleep for every " + String(TIME_TO_SLEEP / 60) + " Mins");
   // Go to sleep now
   Serial.println("Going to sleep now");
   Serial.flush();
@@ -480,7 +474,7 @@ void showTime(String w, String timeString, String dateString,
   }
 
   paint.DrawStringAt(325, 5, percentStr.c_str(), &Font12, COLORED);
-  // paint.DrawStringAt(280, 5, battLevel.c_str(), &Font12, COLORED);
+  paint.DrawStringAt(280, 5, battLevel.c_str(), &Font12, COLORED);
   int stringWidth = w.length() * Font48.Width;
   int newStartPos = (360 - stringWidth) / 2; // Center position calculation
   if (w == "BATTERY LOW")

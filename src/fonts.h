@@ -39,7 +39,7 @@
 #ifndef __FONTS_H
 #define __FONTS_H
 
-/* Max size of bitmap will based on a font24 (17x24) */
+/* Max size of bitmap based on Font48 (48x48) */
 #define MAX_HEIGHT_FONT 48
 #define MAX_WIDTH_FONT 24
 #define OFFSET_BITMAP 54
@@ -47,6 +47,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include <stdint.h>
 
+/**
+ * Font structure containing bitmap data and dimensions
+ * @table: Pointer to font bitmap data
+ * @Width: Width of each character in pixels
+ * @Height: Height of each character in pixels
+ */
 struct sFONT
 {
   const uint8_t *table;
@@ -54,11 +60,17 @@ struct sFONT
   uint16_t Height;
 };
 
-// Define Font variables - only declare the ones actually used in the code
-extern sFONT Font48; // Used for main text
-extern sFONT Font24; // Used for temperature
-extern sFONT Font12; // Used for battery info
-extern sFONT Font8;  // Used for degree symbol
+/**
+ * Font definitions for the E-Paper Display Clock
+ * Font48: Large font for weekday and time display
+ * Font24: Medium font for temperature symbol
+ * Font12: Small font for battery percentage
+ * Font8: Tiny font for special symbols
+ */
+extern sFONT Font48; // Primary display font (weekday, time, date)
+extern sFONT Font24; // Temperature degree symbol
+extern sFONT Font12; // Battery status information
+extern sFONT Font8;  // Special indicators and symbols
 
 #endif /* __FONTS_H */
 
