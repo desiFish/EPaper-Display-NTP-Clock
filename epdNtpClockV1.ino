@@ -69,7 +69,7 @@ NTPClient timeClient(ntpUDP, "asia.pool.ntp.org", 19800); // 19800 is offset of 
 UBYTE image[68000];
 Epd epd;
 
-bool errFlag = false;
+byte errFlag = 0;
 /**
  * @brief Measures battery voltage with averaging
  * @return float Actual battery voltage in volts
@@ -141,48 +141,35 @@ void disableWiFi()
  * @note Requires an active WiFi connection to function
  * @note Uses Preferences to store the last update day
  */
-bool autoTimeUpdate(bool forceUpdate = false)
+bool autoTimeUpdate()
 {
-  if (!pref.isKey("lastUpdateDay"))
-    pref.putUChar("lastUpdateDay", 0);
-
-  byte lastUpdateDay = pref.getUChar("lastUpdateDay", 0);
-  DateTime now = rtc.now();
-  byte currentDay = now.day();
-
-  // Calculate days passed, handling month rollover
-  int daysPassed = (currentDay - lastUpdateDay + 31) % 31; // Handle month rollover
-
-  // Check if 20 days have passed since last update
-  if (lastUpdateDay == 0 || daysPassed >= 20 || forceUpdate)
+  enableWiFi();
+  if (WiFi.status() == WL_CONNECTED)
   {
-    enableWiFi();
-    if (WiFi.status() == WL_CONNECTED)
+    timeClient.begin();
+    if (timeClient.update() && timeClient.isTimeSet())
     {
-      timeClient.begin();
-      if (timeClient.update() && timeClient.isTimeSet())
-      {
-        time_t rawtime = timeClient.getEpochTime();
-        struct tm *ti = localtime(&rawtime);
+      time_t rawtime = timeClient.getEpochTime();
+      struct tm *ti = localtime(&rawtime);
 
-        uint16_t year = ti->tm_year + 1900;
-        uint8_t month = ti->tm_mon + 1;
-        uint8_t day = ti->tm_mday;
+      uint16_t year = ti->tm_year + 1900;
+      uint8_t month = ti->tm_mon + 1;
+      uint8_t day = ti->tm_mday;
 
-        rtc.adjust(DateTime(year, month, day,
-                            timeClient.getHours(),
-                            timeClient.getMinutes(),
-                            timeClient.getSeconds()));
+      rtc.adjust(DateTime(year, month, day,
+                          timeClient.getHours(),
+                          timeClient.getMinutes(),
+                          timeClient.getSeconds()));
 
-        // Update last update day
-        pref.putUChar("lastUpdateDay", currentDay);
-        Serial.println("RTC updated: " + String(year) + "-" +
-                       String(month) + "-" + String(day));
-        return true;
-      }
+      Serial.println("RTC updated: " + String(year) + "-" +
+                     String(month) + "-" + String(day));
+      return true;
     }
+    else
+      return false;
   }
-  return false;
+  else
+    return false;
 }
 
 /**
@@ -201,20 +188,13 @@ String padNum(int num)
  */
 void setup()
 {
-  setCpuFrequencyMhz(80);
-  disableWiFi(); // Initialize peripherals with power-optimized settings
   Serial.begin(115200);
+  disableWiFi(); // Initialize peripherals with power-optimized settings
+
   pinMode(BATPIN, INPUT);
   Wire.begin();
   Wire.setClock(400000); // Set I2C clock speed to 400kHz
   analogReadResolution(12);
-
-  if (!rtc.begin())
-  {
-    Serial.println("Couldn't find RTC");
-    // showMsg("RTC Error");
-    errFlag = true;
-  }
 
   if (lightMeter.begin(BH1750::ONE_TIME_HIGH_RES_MODE))
   {
@@ -223,7 +203,7 @@ void setup()
   else
   {
     Serial.println(F("Error initialising BH1750"));
-    errFlag = true;
+    errFlag += 1;
   }
   float lux = 0;
   while (!lightMeter.measurementReady(true))
@@ -255,14 +235,22 @@ void setup()
         return;
       }
       epd.Clear();
-      if (errFlag)
-        showMsg("Error");
+      if (errFlag == 1)
+        showMsg("LUX ERROR");
       else
-        showMsg("SLEEPING");
+        showMsg("SLEEPING X__X");
     }
   }
   else
   {
+
+    if (!rtc.begin())
+    {
+      Serial.println("Couldn't find RTC");
+      // showMsg("RTC Error");
+      errFlag += 2;
+    }
+
     nightFlag = false;
 
     float battLevel;
@@ -283,22 +271,27 @@ void setup()
     // Get the current day
     byte currentDay = now.day();
 
-    // Check if we need to update time (once per day)
+    // Check if we need to update time (every 15 days)
     if (!pref.isKey("lastCheckedDay")) // create key:value pairs
       pref.putUChar("lastCheckedDay", 0);
     byte lastCheckedDay = pref.getUChar("lastCheckedDay", 0);
-    if ((lastCheckedDay != currentDay) || timeNeedsUpdate)
+    byte daysPassed = (currentDay - lastCheckedDay + 31) % 31;
+
+    if ((daysPassed >= 15) || timeNeedsUpdate) // check if 15 days passed or force update
     {
       Serial.println("Updating time from NTP server");
-      if (autoTimeUpdate(timeNeedsUpdate)) // Update time from NTP server
+      if (autoTimeUpdate()) // Update time from NTP server
+      {
         Serial.println("Time updated");
+        timeNeedsUpdate = false;
+      }
       else
+      {
         Serial.println("Time Not updated");
+      }
       disableWiFi(); // Turn off WiFi to save power
-      timeNeedsUpdate = false;
-      pref.putBool("timeNeedsUpdate", false);
-      lastCheckedDay = currentDay; // Update last checked day
-      pref.putUChar("lastCheckedDay", lastCheckedDay);
+      pref.putBool("timeNeedsUpdate", timeNeedsUpdate);
+      pref.putUChar("lastCheckedDay", currentDay);
     }
     else
       Serial.println("Time already updated");
@@ -307,25 +300,28 @@ void setup()
     float newBattLevel = batteryLevel();
     battLevel = (newBattLevel < battLevel) ? newBattLevel : ((newBattLevel - battLevel) >= battChangeThreshold || newBattLevel > battUpperLim) ? newBattLevel
                                                                                                                                                : battLevel;
-    int percent = constrain(((battLevel - battLow) / (battHigh - battLow)) * 100, 0, 100);
+    byte percent = constrain(((battLevel - battLow) / (battHigh - battLow)) * 100, 0, 100);
 
     if (tempBattLevel != battLevel)
       pref.putFloat("battLevel", battLevel);
 
     String percentStr;
-    if (battLevel >= 4.0)
+    if (battLevel >= 4.0) // adjust for Li-ion battery
       percentStr = "USB";
     else
       percentStr = String(percent) + "%";
 
     // battery level end
-
     byte tempHour = now.twelveHour();
 
     byte temp = int(rtc.getTemperature());
 
     String dateString = padNum(now.day()) + "/" + padNum(now.month()) + "/" + String(now.year());
     String timeString = padNum(tempHour) + ":" + padNum(now.minute()) + (now.isPM() ? " PM" : " AM");
+    String week = daysOfTheWeek[now.dayOfTheWeek()];
+    if (percent <= 5)
+      week = "BATTERY LOW";
+
     if (epd.Init() != 0)
     {
       Serial.println("e-Paper init failed");
@@ -334,12 +330,17 @@ void setup()
     epd.Clear();
     Serial.println("e-Paper Clear");
     if (timeNeedsUpdate)
-      showMsg("Time Resync Await");
-    else if (errFlag)
-      showMsg("Error");
+      showMsg("TIME SYNC");
+    else if (errFlag == 1)
+      showMsg("LUX ERROR");
+    else if (errFlag == 2)
+      showMsg("RTC ERROR");
+    else if (errFlag == 3)
+      showMsg("LUX RTC ERROR");
     else
-      showTime(daysOfTheWeek[now.dayOfTheWeek()], timeString, dateString, String(battLevel) + "V", percentStr, percent /*for battery icon*/, String(temp) + "C");
+      showTime(week, timeString, dateString, String(battLevel) + "V", percentStr, percent /*for battery icon*/, String(padNum(temp)));
   }
+
   if (tempNightFlag != nightFlag)
     pref.putBool("nightFlag", nightFlag);
 
@@ -351,7 +352,7 @@ void setup()
   Serial.println("Going to sleep now");
   Serial.flush();
   delay(5);
-  esp_deep_sleep_start();
+  //esp_deep_sleep_start();
 }
 
 void loop()
@@ -391,7 +392,7 @@ void showMsg(String msg)
 // Displays time, battery info. First para is week in const char, then time in hh:mm am/pm, then date in dd/mm/yyyy, then battlevel in X.YZV, percent in XY%
 /**
  * @brief Updates display with time and status information
- * @param w Weekday string (const)
+ * @param w Weekday string
  * @param timeString Formatted time string
  * @param dateString Formatted date string
  * @param battLevel Battery voltage string
@@ -400,7 +401,7 @@ void showMsg(String msg)
  * @param temp Temperature string
  * @note Implements power-efficient display update strategy
  */
-void showTime(const char *w, String timeString, String dateString,
+void showTime(String w, String timeString, String dateString,
               String battLevel, String percentStr, byte percent, String temp)
 {
   epd.display_NUM(EPD_3IN52_WHITE);
@@ -414,41 +415,54 @@ void showTime(const char *w, String timeString, String dateString,
   paint.SetRotate(3);           // Top right (0,0)
   paint.Clear(UNCOLORED);
 
-  // Battery icon outline
-  paint.DrawRectangle(10, 4, 26, 12, COLORED);
-  paint.DrawRectangle(8, 6, 10, 10, COLORED);
-
-  // Battery fill level
-  byte fillX = 25; // Default to empty (rightmost position)
-  if (percent > 0)
+  if (percentStr != "USB")
   {
-    if (percent >= 95)
-      fillX = 11; // Full
-    else if (percent >= 85)
-      fillX = 13; // Full-Med
-    else if (percent >= 70)
-      fillX = 15; // Med
-    else if (percent > 50)
-      fillX = 17; // Med-half
-    else if (percent > 30)
-      fillX = 19; // Half
-    else if (percent > 10)
-      fillX = 21; // Low-half
-    else if (percent > 5)
-      fillX = 23; // Low
-    else if (percent > 2)
-      fillX = 25; // Critical
+    // Battery icon outline
+    paint.DrawRectangle(10, 4, 26, 12, COLORED);
+    paint.DrawRectangle(8, 6, 10, 10, COLORED);
 
-    paint.DrawFilledRectangle(fillX, 4, 25, 11, COLORED);
+    // Battery fill level
+    byte fillX = 25; // Default to empty (rightmost position)
+    if (percent > 0)
+    {
+      if (percent >= 95)
+        fillX = 11; // Full
+      else if (percent >= 85)
+        fillX = 13; // Full-Med
+      else if (percent >= 70)
+        fillX = 15; // Med
+      else if (percent > 50)
+        fillX = 17; // Med-half
+      else if (percent > 30)
+        fillX = 19; // Half
+      else if (percent > 10)
+        fillX = 21; // Low-half
+      else if (percent > 5)
+        fillX = 23; // Low
+      else if (percent > 2)
+        fillX = 25; // Critical
+
+      paint.DrawFilledRectangle(fillX, 4, 25, 11, COLORED);
+    }
   }
 
   paint.DrawStringAt(325, 5, percentStr.c_str(), &Font12, COLORED);
-  paint.DrawStringAt(280, 5, battLevel.c_str(), &Font12, COLORED);
-  paint.DrawStringAt(60, 30, w, &Font48, COLORED);
-  paint.DrawStringAt(295, 50, temp.c_str(), &Font24, COLORED);
-  paint.DrawStringAt(327, 47, "o", &Font8, COLORED);
-  paint.DrawStringAt(60, 100, timeString.c_str(), &Font48, COLORED);
-  paint.DrawStringAt(60, 170, dateString.c_str(), &Font48, COLORED);
+  // paint.DrawStringAt(280, 5, battLevel.c_str(), &Font12, COLORED);
+  int stringWidth = w.length() * Font48.Width;
+  int newStartPos = (360 - stringWidth) / 2; // Center position calculation
+  if (w == "BATTERY LOW")
+    paint.DrawStringAt(newStartPos, 30, w.c_str(), &Font48, COLORED);
+  else
+    paint.DrawStringAt(newStartPos, 30, w.c_str(), &Font48, COLORED);
+
+  paint.DrawStringAt(20, 100, timeString.c_str(), &Font48, COLORED);
+  paint.DrawStringAt(270, 100, temp.c_str(), &Font48, COLORED);
+  paint.DrawStringAt(316, 91, "o", &Font24, COLORED);
+  paint.DrawStringAt(325, 100, "C", &Font48, COLORED);
+
+  stringWidth = dateString.length() * Font48.Width;
+  newStartPos = (360 - stringWidth) / 2; // Center position calculation
+  paint.DrawStringAt(newStartPos, 170, dateString.c_str(), &Font48, COLORED);
 
   epd.display_part(paint.GetImage(), 0, 0, paint.GetWidth(), paint.GetHeight());
   epd.lut_GC();
