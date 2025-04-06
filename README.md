@@ -29,7 +29,7 @@
   </tr>
   <tr>
     <td>📺 Display</td>
-    <td>3.52" BiColor E-paper (360x240)</td>
+    <td>Waveshare 3.52" BiColor (Black and White) E-paper (360x240)</td>
   </tr>
   <tr>
     <td>🔋 Power Source</td>
@@ -47,13 +47,13 @@
   </tr>
   <tr>
     <td>Sleep Duration</td>
-    <td>60 seconds</td>
+    <td>~60 seconds</td>
   </tr>
   <tr>
     <td>Battery Thresholds</td>
     <td>
       📈 High: 3.4V<br>
-      📉 Low: 2.8V
+      📉 Low: 2.9V
     </td>
   </tr>
 </table>
@@ -170,9 +170,9 @@
       <td align="center">📊<br><span style="color: #9C27B0">Battery Monitor</span></td>
     </tr>
     <tr>
-      <td><span style="color: #4CAF50">60s Deep Sleep</span></td>
+      <td><span style="color: #4CAF50">~60s Deep Sleep</span></td>
       <td><span style="color: #2196F3">Light Sensor Based</span></td>
-      <td><span style="color: #FF9800">Daily NTP Sync</span></td>
+      <td><span style="color: #FF9800">Periodic NTP Sync</span></td>
       <td><span style="color: #9C27B0">Voltage Tracking</span></td>
     </tr>
   </table>
@@ -197,7 +197,7 @@ graph TD
 ```yaml
 Required Libraries:
   - Check header section inside .ino file
-  - OEM Display Libraries (Included)
+  - OEM Display Libraries (Included in src)
 ```
 </details>
 
@@ -286,7 +286,7 @@ const char *password = "Your_PASSWORD";
     <td><strong>Status</strong></td>
   </tr>
   <tr>
-    <td>April 5, 2025</td>
+    <td>April 6, 2025</td>
     <td>TBD</td>
     <td>TBD</td>
     <td>TBD</td>
@@ -294,7 +294,7 @@ const char *password = "Your_PASSWORD";
   <tr>
     <td colspan="4">
       <strong>Performance Metrics</strong><br>
-      🔋 Initial Voltage: 3.4V (Resting)<br>
+      🔋 Initial Voltage: 3.54V<br>
       📉 Final Voltage: TBD<br>
       🌡️ Temperature Range: TBD
     </td>
@@ -364,15 +364,25 @@ const char *password = "Your_PASSWORD";
 ## 🌐 Connectivity 📡
 - 📡 WiFi6 2.4GHz
 - 🕒 NTP synchronization
-- 🔄 Daily updates
-- 💤 Auto sleep when inactive
+- 💤 Auto sleep when dark
 
-## 🔬 Technical Details 📊
-- 📈 ADC Resolution: 12-bit
-- ⚡ I2C Speed: 400kHz
-- 🔌 Power Modes:
-  - 🟢 Active
-  - 💤 Deep Sleep
+### 🌙 Deep Sleep Implementation with DS3231 RTC
+The project implements an efficient deep sleep mode using the DS3231 RTC's external alarm feature. This approach significantly reduces power consumption while maintaining accurate timekeeping.
+
+#### How it Works
+1. The DS3231 RTC DWQ pin is connected to GPIO7 (MTDO) (RTC GPIO)
+2. The RTC alarm triggers a signal on the SQW pin
+3. ESP32-C6 wakes up from deep sleep on the falling edge
+
+#### Key Implementation Points
+- Wake-up Source: `esp_sleep_enable_ext0_wakeup(GPIO_NUM_7, 0)`
+- Wake Up Interval: 60 seconds (configurable)
+- Current Consumption: ~16µA in deep sleep (for XIAO ESP32C6 only)
+
+#### References
+1. [ESP32 Wake-Up Using DS3231 RTC](https://randomnerdtutorials.com/esp32-wake-up-deep-sleep-external-alarms-ds3231/)
+2. [XIAO ESP32C6 Deep Sleep Guide](https://wiki.seeedstudio.com/xiao_esp32c6_getting_started/#demo1-deep-sleep-with-external-wake-up)
+3. [ESP32 External Wake-Up Implementation](https://randomnerdtutorials.com/esp32-external-wake-up-deep-sleep/)
 
 ## ⚠️ Important Notes & Warnings 🚨
 
