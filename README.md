@@ -370,7 +370,7 @@ const char *password = "Your_PASSWORD";
 The project implements an efficient deep sleep mode using the DS3231 RTC's external alarm feature. This approach significantly reduces power consumption while maintaining accurate timekeeping.
 
 #### How it Works
-1. The DS3231 RTC DWQ pin is connected to GPIO7 (MTDO) (RTC GPIO)
+1. The DS3231 RTC SQW pin is connected to GPIO7 (MTDO) (RTC GPIO)
 2. The RTC alarm triggers a signal on the SQW pin
 3. ESP32-C6 wakes up from deep sleep on the falling edge
 
