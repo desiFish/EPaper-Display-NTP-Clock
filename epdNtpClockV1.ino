@@ -1,6 +1,6 @@
 /*
 epdNtpClockV1.ino
-Copyright (C) 2024 desiFish
+Copyright (C) 2024-2025 desiFish
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ Copyright (C) 2024 desiFish
 
 #include <Wire.h>
 #include "RTClib.h"
-#include "driver/rtc_io.h"
+#include "driver/rtc_io.h" // RTC GPIO library for deep sleep external wakeup
 
 #include <WiFi.h>
 
@@ -36,44 +36,44 @@ Copyright (C) 2024 desiFish
 // powersave wifi off
 #include "esp_wifi.h"
 
-// Define the DS3231 Interrupt pin (will wake-up the ESP32 - must be an RTC GPIO)
+// Define the DS3231 Interrupt pin (will wake-up the ESP32 - must be an RTC GPIO - check Readme for references)
 #define BUTTON_PIN_BITMASK(GPIO7) (1ULL << GPIO7) // 2 ^ GPIO_NUMBER in hex
 #define CLOCK_INTERRUPT_PIN GPIO_NUM_7            // GPIO 7
 
-Preferences pref; // preference library object
+RTC_DATA_ATTR bool nightFlag = false; // RTC_DATA_ATTR keeps the variable in RTC memory, so it survives deep sleep
+RTC_DATA_ATTR float battLevel = 0.0;  // RTC_DATA_ATTR keeps the variable in RTC memory, so it survives deep sleep
 
-RTC_DS3231 rtc;          // ds3231 object
-BH1750 lightMeter(0x23); // Initalize light sensor
+RTC_DS3231 rtc; // ds3231 object
 
 // Set the alarm
-DateTime alarm1Time = DateTime(2025, 4, 6, 13, 35, 0); // Set the alarm time (year, month, day, hour, minute, second)
+DateTime alarm1Time = DateTime(2025, 4, 6, 13, 35, 0); // Set the alarm time (year, month, day, hour, minute, second), no need to change this, will work with any time
 
-#define BATPIN A0 // battery voltage divider connection pin (1M Ohm with 104 Capacitor)
+#define BATPIN A0 // battery voltage divider connection pin (1M Ohm voltage divider with 104 Capacitor)
 
 // System configuration constants
 #define WIFI_CONNECT_TIMEOUT 10000 // Timeout for WiFi connection attempts (ms)
 #define BATTERY_LEVEL_SAMPLING 4   // Number of ADC samples for battery voltage averaging
 
 // Battery monitoring thresholds (Volts)
-#define battChangeThreshold 0.15 // Minimum voltage change to update reading
+#define battChangeThreshold 0.15 // Minimum voltage change to update reading (for removing fluctuations)
 #define battUpperLim 3.3         // Upper limit for normal battery operation
-// you may need to adjust this value based on your readings
-#define battHigh 3.4 // Full battery threshold (ideally this is the resting voltage)
+// you may need to adjust this value based on your readings to show battery "100%"
+#define battHigh 3.3 // Full battery threshold (ideally this should be the resting voltage, i.e. ~3.4V but my ESP32 reads it 3.36V)
 #define battLow 2.9  // Low battery threshold
 
-const char *ssid = "SonyBraviaX400";
-const char *password = "79756622761";
+const char *ssid = "SonyBraviaX400";  // Your WiFi SSID
+const char *password = "79756622761"; // Your WiFi password
 
-WiFiUDP ntpUDP;
+WiFiUDP ntpUDP;                                           // Create a UDP instance to send and receive NTP packets
 NTPClient timeClient(ntpUDP, "asia.pool.ntp.org", 19800); // 19800 is offset of India, asia.pool.ntp.org is close to India
+// Weekday names for display
+static const char daysOfTheWeek[7][10] PROGMEM = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
-#define COLORED 0
-#define UNCOLORED 1
+#define COLORED 0   // 0 is black
+#define UNCOLORED 1 // 1 is white
 
 UBYTE image[68000];
 Epd epd;
-
-byte errFlag = 0;
 /**
  * @brief Measures battery voltage with averaging
  * @return float Actual battery voltage in volts
@@ -91,8 +91,6 @@ float batteryLevel()
   // Serial.println(Vbattf);
   return (Vbattf);
 }
-// Weekday names for display
-static const char daysOfTheWeek[7][10] PROGMEM = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 /**
  * @brief Enables WiFi with power-optimized settings
@@ -118,7 +116,6 @@ void enableWiFi()
 
 /**
  * @brief Disables WiFi and other wireless interfaces to save power
- * @note Also configures CPU for low-power operation
  */
 void disableWiFi()
 {
@@ -130,20 +127,11 @@ void disableWiFi()
 
 /**
  * @brief Updates RTC time from NTP server if necessary
- *
- * This function checks if an update is needed based on the following criteria:
- * 1. If it's the first run (lastUpdateDay is 0)
- * 2. If 20 days have passed since the last update
- * 3. If a force update is requested
- *
- * It handles month rollovers when calculating days passed.
  * If an update is needed and WiFi is connected, it fetches the current time
  * from an NTP server and updates the RTC.
  *
- * @param forceUpdate If true, bypasses the normal update interval check
  * @return bool Returns true if the time was successfully updated, false otherwise
  * @note Requires an active WiFi connection to function
- * @note Uses Preferences to store the last update day
  */
 bool autoTimeUpdate()
 {
@@ -197,8 +185,12 @@ void setup()
 
   pinMode(BATPIN, INPUT);
   Wire.begin();
-  Wire.setClock(400000); // Set I2C clock speed to 400kHz
-  analogReadResolution(12);
+  Wire.setClock(400000);    // Set I2C clock speed to 400kHz
+  analogReadResolution(12); // Set ADC resolution to 12 bits
+
+  BH1750 lightMeter(0x23); // Initalize light sensor
+  Preferences pref;        // preference library object
+  byte errFlag = 0;        // Error flag for various error messages
 
   if (!rtc.begin())
   {
@@ -237,23 +229,14 @@ void setup()
     errFlag += 1;
   }
   float lux = 0;
-  while (!lightMeter.measurementReady(true))
-  {
+  while (!lightMeter.measurementReady(true)) // Wait for measurement to be ready
+  {  
     yield();
   }
   lux = lightMeter.readLightLevel();
   Serial.print("Light: ");
   Serial.print(lux);
   Serial.println(" lx");
-
-  pref.begin("database", false); // Open Preferences with namespace "database"
-
-  if (!pref.isKey("nightFlag"))
-  { // create key:value pair
-    pref.putBool("nightFlag", false);
-  }
-  bool nightFlag = pref.getBool("nightFlag", false); // remembers last state of clock i.e. sleeping or not
-  bool tempNightFlag = nightFlag;
 
   if (lux == 0)
   {
@@ -269,19 +252,13 @@ void setup()
       if (errFlag == 1)
         showMsg("LUX ERROR");
       else
-        showMsg("SLEEPING X__X");
+        showMsg("SLEEPING X_X");
     }
   }
   else
   {
+    pref.begin("database", false); // Open Preferences with namespace "database"
     nightFlag = false;
-
-    float battLevel;
-    if (!pref.isKey("battLevel")) // create key:value pairs
-      pref.putFloat("battLevel", 0.0);
-    battLevel = pref.getFloat("battLevel", 0.0);
-
-    float tempBattLevel = battLevel;
 
     if (!pref.isKey("timeNeedsUpdate")) // create key:value pairs
       pref.putBool("timeNeedsUpdate", true);
@@ -314,7 +291,8 @@ void setup()
       }
       disableWiFi(); // Turn off WiFi to save power
       pref.putBool("timeNeedsUpdate", timeNeedsUpdate);
-      pref.putUChar("lastCheckedDay", currentDay);
+      pref.putUChar("lastCheckedDay", currentDay); // Update last checked day
+      pref.end();                                  // Close the preferences
     }
     else
       Serial.println("Time already updated");
@@ -322,64 +300,56 @@ void setup()
     // Battery level handling
     float newBattLevel = batteryLevel();
     battLevel = (newBattLevel < battLevel) ? newBattLevel : ((newBattLevel - battLevel) >= battChangeThreshold || newBattLevel > battUpperLim) ? newBattLevel
-                                                                                                                                               : battLevel;
-    byte percent = constrain(((battLevel - battLow) / (battHigh - battLow)) * 100, 0, 100);
-
-    if (tempBattLevel != battLevel)
-      pref.putFloat("battLevel", battLevel);
+                                                                                                                                               : battLevel; // Update battLevel if it has changed significantly or is above upper limit
+    byte percent = constrain(((battLevel - battLow) / (battHigh - battLow)) * 100, 0, 100);                                                                 // Calculate percentage based on battHigh and battLow
 
     String percentStr;
-    if (battLevel >= 3.7) // adjust for Li-ion battery
+    if (battLevel >= 3.7) // LiFePO4 battery has max voltage of 3.6V anything larger than this means external power
       percentStr = "USB";
     else
       percentStr = String(percent) + "%";
 
-    // battery level end
-    byte tempHour = now.twelveHour();
+    byte tempHour = now.twelveHour(); // Get the hour in 12-hour format
 
-    byte temp = int(rtc.getTemperature());
+    byte temp = int(rtc.getTemperature()); // Get the temperature in Celsius, rounded to the nearest integer
 
-    String dateString = padNum(now.day()) + "/" + padNum(now.month()) + "/" + String(now.year());
-    String timeString = padNum(tempHour) + ":" + padNum(now.minute()) + (now.isPM() ? " PM" : " AM");
+    String dateString = padNum(now.day()) + "/" + padNum(now.month()) + "/" + String(now.year());     // Format date string
+    String timeString = padNum(tempHour) + ":" + padNum(now.minute()) + (now.isPM() ? " PM" : " AM"); // Format time string
     String week = daysOfTheWeek[now.dayOfTheWeek()];
-    if (percent <= 5)
+
+    if (percent <= 5) // Battery level is low
       week = "BATTERY LOW";
 
-    if (epd.Init() != 0)
+    if (epd.Init() != 0) // Initialize e-Paper display
     {
       Serial.println("e-Paper init failed");
       return;
     }
-    epd.Clear();
+    epd.Clear(); // Clear the display
     Serial.println("e-Paper Clear");
-    if (timeNeedsUpdate)
+
+    if (timeNeedsUpdate) // If time needs to be updated
       showMsg("TIME SYNC");
-    else if (errFlag == 1)
+    else if (errFlag == 1) // If there was an error with the light sensor
       showMsg("LUX ERROR");
-    else if (errFlag == 2)
+    else if (errFlag == 2) // If there was an error with the RTC
       showMsg("RTC ERROR");
-    else if (errFlag == 3)
+    else if (errFlag == 3) // If there was an error with both the light sensor and RTC
       showMsg("LUX RTC ERROR");
-    else
+    else // Normal operation
       showTime(week, timeString, dateString, String(battLevel) + "V", percentStr, percent /*for battery icon*/, String(padNum(temp)));
   }
-
-  if (tempNightFlag != nightFlag)
-    pref.putBool("nightFlag", nightFlag);
-
-  pref.end(); // Close the preferences
-
+   // Go to sleep now
+  Serial.println("Going to sleep now");
+  Serial.flush();
   // Configure external wake-up
   esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK(CLOCK_INTERRUPT_PIN), ESP_EXT1_WAKEUP_ANY_LOW);
   // Configure pullup/downs via RTCIO to tie wakeup pins to inactive level during deepsleep.
-  // The RTC SQW pin is active low
+  // The RTC SQW pin is active low, CHECK README for references on Deep Sleep
   rtc_gpio_pulldown_dis(CLOCK_INTERRUPT_PIN);
   rtc_gpio_pullup_en(CLOCK_INTERRUPT_PIN);
-  // Go to sleep now
-  Serial.println("Going to sleep now");
-  Serial.flush();
-  delay(5);
-  esp_deep_sleep_start();
+
+  esp_deep_sleep_start(); // Enter deep sleep mode
 }
 
 void loop()
@@ -390,8 +360,7 @@ void loop()
 // various error msg display function
 /**
  * @brief Displays error or status messages
- * @param msg Message to display
- * @note Optimized for minimum display updates
+ * @param msg Message to display in string format
  */
 void showMsg(String msg)
 {
@@ -413,7 +382,7 @@ void showMsg(String msg)
   Serial.println("sleep......");
   delay(100);
   epd.sleep();
-  Serial.println("end");
+  Serial.println("end showMsg");
 }
 
 // Displays time, battery info. First para is week in const char, then time in hh:mm am/pm, then date in dd/mm/yyyy, then battlevel in X.YZV, percent in XY%
@@ -422,14 +391,14 @@ void showMsg(String msg)
  * @param w Weekday string
  * @param timeString Formatted time string
  * @param dateString Formatted date string
- * @param battLevel Battery voltage string
+ * @param battLevelS Battery voltage string
  * @param percentStr Battery percentage string
  * @param percent Battery percentage value for icon
  * @param temp Temperature string
  * @note Implements power-efficient display update strategy
  */
 void showTime(String w, String timeString, String dateString,
-              String battLevel, String percentStr, byte percent, String temp)
+              String battLevelS, String percentStr, byte percent, String temp)
 {
   epd.display_NUM(EPD_3IN52_WHITE);
   epd.lut_GC();
@@ -450,37 +419,32 @@ void showTime(String w, String timeString, String dateString,
 
     // Battery fill level
     byte fillX = 25; // Default to empty (rightmost position)
-    if (percent > 0)
-    {
-      if (percent >= 95)
-        fillX = 11; // Full
-      else if (percent >= 85)
-        fillX = 13; // Full-Med
-      else if (percent >= 70)
-        fillX = 15; // Med
-      else if (percent > 50)
-        fillX = 17; // Med-half
-      else if (percent > 30)
-        fillX = 19; // Half
-      else if (percent > 10)
-        fillX = 21; // Low-half
-      else if (percent > 5)
-        fillX = 23; // Low
-      else if (percent > 2)
-        fillX = 25; // Critical
 
-      paint.DrawFilledRectangle(fillX, 4, 25, 11, COLORED);
-    }
+    if (percent >= 95)
+      fillX = 11; // Full
+    else if (percent >= 85)
+      fillX = 13; // Full-Med
+    else if (percent >= 70)
+      fillX = 15; // Med
+    else if (percent >= 50)
+      fillX = 17; // Med-half
+    else if (percent >= 30)
+      fillX = 19; // Half
+    else if (percent >= 10)
+      fillX = 21; // Low-half
+    else if (percent >= 5)
+      fillX = 23; // Low
+    else if (percent >= 0)
+      paint.DrawStringAt(15, 2, "x", &Font12, COLORED); // Critical
+
+    paint.DrawFilledRectangle(fillX, 4, 25, 11, COLORED);
   }
 
   paint.DrawStringAt(325, 5, percentStr.c_str(), &Font12, COLORED);
-  paint.DrawStringAt(280, 5, battLevel.c_str(), &Font12, COLORED);
+  paint.DrawStringAt(280, 5, battLevelS.c_str(), &Font12, COLORED);
   int stringWidth = w.length() * Font48.Width;
   int newStartPos = (360 - stringWidth) / 2; // Center position calculation
-  if (w == "BATTERY LOW")
-    paint.DrawStringAt(newStartPos, 30, w.c_str(), &Font48, COLORED);
-  else
-    paint.DrawStringAt(newStartPos, 30, w.c_str(), &Font48, COLORED);
+  paint.DrawStringAt(newStartPos, 30, w.c_str(), &Font48, COLORED);
 
   paint.DrawStringAt(20, 100, timeString.c_str(), &Font48, COLORED);
   paint.DrawStringAt(270, 100, temp.c_str(), &Font48, COLORED);
