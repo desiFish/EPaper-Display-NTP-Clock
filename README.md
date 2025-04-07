@@ -333,19 +333,15 @@ const char *password = "Your_PASSWORD";
       <sub>Inside 2</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x6.jpg" width="200"><br>
-      <sub>Inside 3</sub>
+      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x0.jpg" width="200"><br>
+      <sub>New UI</sub>
     </td>
     <td align="center">
       <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x7.jpg" width="200"><br>
       <sub>ESP32 C3 & C6</sub>
     </td>
   </tr>
-  <tr>
-    <td align="center">
-      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x0.jpg" width="200"><br>
-      <sub>New UI</sub>
-    </td>
+  <tr>    
     <td align="center">
       <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x10.jpg" width="200"><br>
       <sub>New Sleep UI</sub>
@@ -358,15 +354,10 @@ const char *password = "Your_PASSWORD";
       <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x12.jpg" width="200"><br>
       <sub>Inside 5</sub>
     </td>
-  </tr>
-  <tr>
-    <td align="center">
+     <td align="center">
       <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x13.jpg" width="200"><br>
       <sub>Inside 6</sub>
     </td>
-    <td></td>
-    <td></td>
-    <td></td>
   </tr>
 </table>
 </div>
