@@ -307,56 +307,62 @@ const char *password = "Your_PASSWORD";
 <table border="0" cellspacing="0" cellpadding="10">
   <tr>
     <td align="center">
-      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/epdClock.jpg" width="200"><br>
+      <img src="/src/images/epdClock.jpg" width="200"><br>
       <sub>Front 1</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x1.jpg" width="200"><br>
+      <img src="/src/images/x1.jpg" width="200"><br>
       <sub>Side 1</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x2.jpg" width="200"><br>
+      <img src="/src/images/x2.jpg" width="200"><br>
       <sub>Back</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x3.jpg" width="200"><br>
+      <img src="/src/images/x3.jpg" width="200"><br>
       <sub>Front 2</sub>
     </td>
   </tr>
   <tr>
     <td align="center">
-      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x4.jpg" width="200"><br>
+      <img src="/src/images/x4.jpg" width="200"><br>
       <sub>Inside 1</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x5.jpg" width="200"><br>
+      <img src="/src/images/x5.jpg" width="200"><br>
       <sub>Inside 2</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x0.jpg" width="200"><br>
+      <img src="/src/images/x0.jpg" width="200"><br>
       <sub>New UI</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x7.jpg" width="200"><br>
+      <img src="/src/images/x7.jpg" width="200"><br>
       <sub>ESP32 C3 & C6</sub>
     </td>
   </tr>
   <tr>    
     <td align="center">
-      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x10.jpg" width="200"><br>
+      <img src="/src/images/x10.jpg" width="200"><br>
       <sub>New Sleep UI</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x11.jpg" width="200"><br>
+      <img src="/src/images/x11.jpg" width="200"><br>
       <sub>Inside 4</sub>
     </td>
     <td align="center">
-      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x12.jpg" width="200"><br>
+      <img src="/src/images/x12.jpg" width="200"><br>
       <sub>Inside 5</sub>
     </td>
      <td align="center">
-      <img src="https://github.com/KamadoTanjiro-beep/E-Paper-Display-NTP-Clock/blob/main/src/images/x13.jpg" width="200"><br>
+      <img src="/src/images/x13.jpg" width="200"><br>
       <sub>Inside 6</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="4">
+      <img src="/src/images/schematic.png" width="800"><br>
+      <sub>Circuit Schematic</sub>
     </td>
   </tr>
 </table>
