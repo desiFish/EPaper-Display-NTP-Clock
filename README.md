@@ -277,7 +277,7 @@ const char *password = "Your_PASSWORD";
 
 <table>
   <tr>
-    <th colspan="4">📊 Battery Life Analysis - Test #1 (With ESP32 C6)</th>
+    <th colspan="4">📊 Battery Life Analysis - Test #3 (With ESP32 C6)</th>
   </tr>
   <tr>
     <td><strong>Start Date</strong></td>
